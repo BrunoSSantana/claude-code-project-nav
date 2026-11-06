@@ -1,0 +1,9 @@
+# written by the Claude Code engine on load
+.claude-plugin/types/
+.mcpb-cache/
+
+node_modules/
+*.log
+.DS_Store
+*~
+*.swp

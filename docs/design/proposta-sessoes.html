@@ -1,0 +1,235 @@
+<title>Painel: sessões em caixa</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: proposta do painel ao lado do painel de hoje, mesma largura do Pane do Desktop (~380px). Só escuro, como o app. */
+:root {
+  color-scheme: dark;
+  --ground: #141416;
+  --pane: #18181B;
+  --open: #1F1F24;
+  --box: #232329;
+  --box-hover: #2C2C34;
+  --line: #2A2A30;
+  --line-strong: #3A3A42;
+  --fg: #ECECEE;
+  --fg-2: #C9C9CF;
+  --muted: #A1A1AA;
+  --dim: #8B8B93;
+  --orange: #E8915F;
+  --orange-soft: #F2B48C;
+  --blue: #7AB0FF;
+  --blue-soft: #9CC3FF;
+  --gray: #5C5C64;
+  --sans: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --r: 0px; /* cantos: o Box do engine não tem raio */
+}
+body { background: var(--ground); color: var(--fg); font-family: var(--sans); font-size: 14px; }
+.wrap { padding-block: 28px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+h1 { margin: 0; font-size: 20px; font-weight: 600; text-wrap: balance; }
+.lede { margin: 6px 0 0; color: var(--muted); max-width: 66ch; line-height: 1.5; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 13px; color: var(--fg-2); }
+.controls label { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.controls input { accent-color: var(--orange); }
+
+.stage { display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+.col { flex: 1 1 340px; max-width: 380px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.col > .tag { font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+.col.before { opacity: .9; }
+
+.pane { background: var(--pane); border: 1px solid var(--line-strong); display: flex; flex-direction: column; min-width: 0; }
+.pane-head { display: flex; align-items: baseline; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.pane-head b { font-weight: 600; }
+.pane-head span { font-size: 12px; color: var(--muted); }
+.list { padding: 4px 8px 14px; display: flex; flex-direction: column; }
+.sec { display: flex; justify-content: space-between; padding: 12px 8px 6px; font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+
+/* projeto */
+.projects { display: flex; flex-direction: column; gap: var(--gap-proj); }
+.proj { display: flex; flex-direction: column; border-radius: var(--r); }
+.proj.is-open { background: var(--open); }
+.proj-row { display: flex; align-items: center; gap: 2px; padding-right: 4px; }
+.proj-hit { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 8px; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: var(--r); }
+.proj-hit:hover { background: rgba(255,255,255,.035); }
+.av { width: 30px; height: 30px; flex: 0 0 30px; border-radius: 8px; color: #141416; font-weight: 700; font-size: 11.5px; display: flex; align-items: center; justify-content: center; }
+.names { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.names b { font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.names small { font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chev { color: var(--dim); font-size: 12px; width: 12px; text-align: center; }
+.icon-btn { width: 28px; height: 28px; flex: 0 0 28px; border: 0; background: transparent; border-radius: var(--r); display: flex; align-items: center; justify-content: center; cursor: pointer; color: #6B6B73; }
+.icon-btn:hover { background: var(--box-hover); }
+.icon-btn.on { color: var(--orange); }
+
+/* sessões: a linha inteira é o clique; no hover aparece a caixa arredondada em volta */
+.sessions { display: flex; flex-direction: column; gap: var(--gap-sess); padding: 4px 10px 12px 46px; }
+.sess { display: flex; align-items: center; gap: 10px; padding: 9px 10px 9px 12px; background: transparent; border: 1px solid transparent; border-radius: 9px; color: inherit; font: inherit; text-align: left; width: 100%; box-sizing: border-box; cursor: pointer; }
+.sess:hover, .sess:focus-visible { background: var(--box); border-color: var(--line-strong); outline: none; }
+.sess.here { cursor: default; }
+.dot { width: 8px; height: 8px; flex: 0 0 8px; border-radius: 4px; }
+.st { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.st span { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st small { font-size: 11px; color: var(--muted); }
+.go { font-size: 11.5px; color: var(--fg-2); padding: 3px 11px; background: #2E2E36; border-radius: 999px; white-space: nowrap; }
+.sess:hover .go { background: var(--fg); color: #141416; }
+.hover-only .sess:not(.here) .go { visibility: hidden; }
+.hover-only .sess:hover .go, .hover-only .sess:focus-visible .go { visibility: visible; }
+.here-tag { font-size: 11px; color: var(--muted); }
+.more { padding: 2px 8px 0 46px; font-size: 11px; color: var(--dim); }
+.foot { padding: 10px 14px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--muted); }
+
+/* hoje: linhas soltas, "Abrir" separado, sem espaço entre projetos */
+.before .projects { gap: 0; }
+.before .sessions { gap: 0; padding: 0 6px 6px 46px; }
+.before .sess { background: transparent; border-color: transparent; padding: 4px 6px; border-radius: 0; }
+.before .sess:hover { background: transparent; border-color: transparent; }
+.before .sess .st:hover span { text-decoration: underline; }
+.before .go { background: #26262C; color: var(--fg); border-radius: 0; padding: 2px 8px; }
+.before .sess:hover .go { background: #26262C; color: var(--fg); }
+
+/* faixa: botão de grade com hover centrado */
+.band { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--open); border: 1px solid var(--line-strong); max-width: 380px; box-sizing: border-box; }
+.band .crumb { flex: 1; min-width: 0; font-size: 13px; color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip { font-size: 12px; padding: 3px 8px; font-weight: 600; }
+
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+.note { border: 1px solid var(--line); padding: 14px 16px; background: var(--pane); line-height: 1.5; font-size: 13px; color: var(--fg-2); }
+.note h2 { margin: 0 0 6px; font-size: 13px; font-weight: 600; color: var(--fg); }
+.note code { font-family: var(--mono); font-size: 12px; color: var(--orange-soft); }
+@media (prefers-reduced-motion: no-preference) { .sess, .icon-btn, .proj-hit, .go { transition: background .12s, border-color .12s, color .12s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Painel de projetos: sessões em caixa</h1>
+    <p class="lede">À direita, a proposta (v2): “Abrir” em pílula arredondada, e no hover a sessão ganha uma caixa arredondada em volta de tudo (título, “ontem” e “Abrir”), que é o clique inteiro. Mais espaço entre sessões e entre projetos para as caixas caberem. À esquerda, como está hoje.</p>
+  </header>
+
+  <div class="controls" role="group" aria-label="Opções da proposta">
+    <label><input type="checkbox" id="opt-hover"> “Abrir” só aparece no hover</label>
+    <label>Espaço entre sessões
+      <select id="opt-sess">
+        <option value="2px">pequeno</option>
+        <option value="6px" selected>médio (proposta)</option>
+        <option value="12px">grande</option>
+      </select>
+    </label>
+    <label>Espaço entre projetos
+      <select id="opt-gap">
+        <option value="8px">pequeno</option>
+        <option value="16px" selected>médio (proposta)</option>
+        <option value="24px">grande</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="stage">
+    <div class="col before">
+      <span class="tag">Hoje</span>
+      <div class="pane" id="pane-before"></div>
+    </div>
+    <div class="col" id="col-after">
+      <span class="tag">Proposta</span>
+      <div class="pane" id="pane-after"></div>
+      <span class="tag" style="margin-top:8px">Faixa: grade e alfinete com hover do tamanho do ícone</span>
+      <div class="band">
+        <span class="av" style="width:24px;height:24px;flex-basis:24px;font-size:10.5px;background:#F2B48C">PM</span>
+        <span class="crumb">project-mods › Painel de projetos ▾</span>
+        <span class="chip" style="background:#3A2A20;color:var(--orange-soft)">1 aguardando</span>
+        <button class="icon-btn" type="button" aria-label="Projetos" style="color:var(--fg-2)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <section class="notes" aria-label="Como fica no engine">
+    <div class="note">
+      <h2>“Abrir” arredondado</h2>
+      O <code>Box</code> do engine não tem raio, então a pílula vira um <code>Svg</code> (retângulo arredondado com o texto), como já é o avatar. Fica igual ao mockup.
+    </div>
+    <div class="note">
+      <h2>Caixa no hover</h2>
+      Cada sessão é um <code>Box</code> com <code>key</code>, <code>borderStyle="round"</code> e borda da cor do fundo; o <code>hover</code> troca a cor da borda e o fundo. Incerto: se o Desktop desenha <code>round</code> com cantos curvos ou retos. Só vendo no app.
+    </div>
+    <div class="note">
+      <h2>Espaço</h2>
+      No Desktop a borda ocupa uma linha em cima e uma embaixo, e o espaço é contado em linhas. Por isso as sessões ficam mais altas que hoje; o seletor acima mostra as variações.
+    </div>
+  </section>
+</div>
+
+<script>
+const ORANGE = '#E8915F', BLUE = '#7AB0FF', GRAY = '#5C5C64';
+const PROJECTS = [
+  { sec: 'Projeto atual', name: 'project-mods', ini: 'PM', color: '#F2B48C', sub: '~/www/study/project-mods · main', open: true, pin: false, sessions: [
+    { t: 'Painel de projetos', m: 'aberta aqui', d: BLUE, here: true },
+    { t: 'Fase 0: sondar o engine', m: 'ontem', d: GRAY },
+    { t: 'Ler sessões do Desktop', m: 'terça', d: GRAY },
+  ], more: 3 },
+  { sec: 'Fixados', name: 'api-pagamentos', ini: 'AP', color: '#A8DCC0', sub: 'Aguardando sua permissão', subColor: '#F2B48C', open: true, pin: true, sessions: [
+    { t: 'Migrar endpoints para v2', m: 'pede para rodar npm test', d: ORANGE },
+    { t: 'Corrigir testes de integração', m: 'ontem', d: GRAY },
+  ] },
+  { sec: 'Fixados', name: 'app-mobile', ini: 'AM', color: '#9CC3FF', sub: '1 sessão rodando', subColor: '#9CC3FF', open: false, pin: true, sessions: [] },
+  { sec: 'Todos os outros', name: 'site-institucional', ini: 'SI', color: '#C9B6F2', sub: 'Última atividade quarta', open: false, pin: false, sessions: [] },
+  { sec: 'Todos os outros', name: 'infra-terraform', ini: 'IT', color: '#E8D49A', sub: 'Última atividade 08/10', open: false, pin: false, sessions: [] },
+];
+
+const pinSvg = on => `<svg width="15" height="15" viewBox="0 0 24 24" fill="${on ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l-1 6 4 4H6l4-4z"/><path d="M12 13v8" fill="none"/></svg>`;
+const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function sessionHtml(s) {
+  const body = `<span class="dot" style="background:${s.d}"></span>
+    <span class="st"><span>${esc(s.t)}</span><small>${esc(s.m)}</small></span>`;
+  if (s.here) return `<div class="sess here">${body}<span class="here-tag">esta sessão</span></div>`;
+  return `<button type="button" class="sess">${body}<span class="go">Abrir</span></button>`;
+}
+
+function render(target, opened) {
+  const groups = [];
+  for (const p of PROJECTS) {
+    let g = groups.find(x => x.sec === p.sec);
+    if (!g) groups.push(g = { sec: p.sec, items: [] });
+    g.items.push(p);
+  }
+  target.innerHTML = `
+    <div class="pane-head"><b>Projetos</b><span>19 projetos no total</span></div>
+    <div class="list">${groups.map(g => `
+      <div class="sec"><span>${g.sec}</span><span>${g.sec === 'Projeto atual' ? '' : g.items.length}</span></div>
+      <div class="projects">${g.items.map(p => {
+        const i = PROJECTS.indexOf(p), isOpen = opened[i];
+        return `<div class="proj${isOpen ? ' is-open' : ''}">
+          <div class="proj-row">
+            <button type="button" class="proj-hit" data-i="${i}" aria-expanded="${isOpen}">
+              <span class="av" style="background:${p.color}">${p.ini}</span>
+              <span class="names"><b>${esc(p.name)}</b><small style="${p.subColor ? `color:${p.subColor}` : ''}">${esc(p.sub)}</small></span>
+              <span class="chev">${isOpen ? '▾' : '▸'}</span>
+            </button>
+            <button type="button" class="icon-btn${p.pin ? ' on' : ''}" aria-label="${p.pin ? 'Desafixar' : 'Fixar'} ${esc(p.name)}">${pinSvg(p.pin)}</button>
+          </div>
+          ${isOpen ? `<div class="sessions">${p.sessions.map(sessionHtml).join('')}</div>${p.more ? `<div class="more" style="padding-bottom:10px">+ ${p.more} na barra lateral do Desktop</div>` : ''}` : ''}
+        </div>`;
+      }).join('')}</div>`).join('')}
+    </div>
+    <div class="foot">Fixados e status ficam salvos para todas as sessões</div>`;
+  target.querySelectorAll('.proj-hit').forEach(b => b.addEventListener('click', () => {
+    opened[b.dataset.i] = !opened[b.dataset.i];
+    render(target, opened);
+  }));
+}
+
+const before = PROJECTS.map(p => p.open), after = PROJECTS.map(p => p.open);
+render(document.getElementById('pane-before'), before);
+render(document.getElementById('pane-after'), after);
+
+const col = document.getElementById('col-after');
+const root = document.documentElement;
+root.style.setProperty('--gap-proj', '16px');
+root.style.setProperty('--gap-sess', '6px');
+document.getElementById('opt-hover').addEventListener('change', e => col.classList.toggle('hover-only', e.target.checked));
+document.getElementById('opt-sess').addEventListener('change', e => col.style.setProperty('--gap-sess', e.target.value));
+document.getElementById('opt-gap').addEventListener('change', e => col.style.setProperty('--gap-proj', e.target.value));
+</script>

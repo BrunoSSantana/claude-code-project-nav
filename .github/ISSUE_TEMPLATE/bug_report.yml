@@ -1,0 +1,57 @@
+name: Bug report
+description: Something in the band, the pane or the status is wrong
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What the band or pane showed, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open two sessions in different projects
+        2. In one, run a command that asks for permission
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: claude-version
+    attributes:
+      label: Claude Code version
+      description: Output of `claude --version`
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      multiple: true
+      options:
+        - Desktop app (Code tab)
+        - Terminal
+        - VS Code
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: Ubuntu 24.04, macOS 15, ...
+    validations:
+      required: true
+  - type: input
+    id: mod-version
+    attributes:
+      label: project-nav version
+      description: The `version` in `.claude-plugin/plugin.json`, or the release you installed
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Any dim `project-nav:` line from the transcript, or lines from `claude --debug`. Remove paths or names you don't want to share.
+      render: text

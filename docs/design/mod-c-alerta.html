@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mod: só a faixa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#141416}
+a{color:#E8915F}a:hover{color:#F2B48C}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #141416; color: #ECECEE; font-family: Inter, system-ui, sans-serif; font-size: 14px">
+
+<div aria-label="Sidebar nativa do Claude Code" style="flex: 0 0 248px; background: #111113; border-right: 1px solid #222226; padding: 18px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: #8B8B93; font-weight: 600">Sidebar nativa</span>
+<div style="height: 30px; border-radius: 8px; background: #1E1E22"></div>
+<div style="height: 10px; width: 60%; border-radius: 5px; background: #24242A; margin-top: 10px"></div>
+<div style="height: 10px; width: 85%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 70%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 78%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 50%; border-radius: 5px; background: #24242A; margin-top: 14px"></div>
+<div style="height: 10px; width: 80%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 65%; border-radius: 5px; background: #1E1E22"></div>
+</div>
+
+<div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column">
+<div style="height: 52px; border-bottom: 1px solid #222226; display: flex; align-items: center; padding: 0 24px; gap: 12px">
+<div style="height: 10px; width: 180px; border-radius: 5px; background: #24242A"></div>
+</div>
+<div aria-label="Conversa nativa" style="flex: 1; padding: 32px 24px; display: flex; justify-content: center">
+<div style="width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 16px">
+<div style="align-self: flex-end; width: 55%; height: 44px; border-radius: 14px; background: #1E1E22"></div>
+<div style="height: 10px; width: 90%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 76%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 84%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 54px; border-radius: 10px; background: #19191C; border: 1px solid #222226"></div>
+<div style="height: 10px; width: 60%; border-radius: 5px; background: #1E1E22"></div>
+<span style="font-size: 12px; color: #8B8B93; margin-top: 8px">Conversa nativa (sem mudanças)</span>
+</div>
+</div>
+
+<div style="padding: 0 24px 10px; display: flex; justify-content: center">
+<div aria-label="Faixa do mod expandida com alerta" style="width: 100%; max-width: 720px; box-sizing: border-box; display: flex; flex-direction: column; border-radius: 10px; background: #1F1F24; border: 1px solid #5A3E2C; overflow: hidden">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 14px; background: #241C17">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F2B48C" stroke-width="2.2" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5v.5"></path></svg>
+<span style="flex: 1 1 260px; min-width: 0"><span style="font-weight: 600; color: #F2B48C">dashboard-vendas precisa de você.</span> <span style="color: #D9B79F">A sessão “Gráfico de funil por região” pede para rodar <span style="font-family: 'JetBrains Mono', monospace">npm run build</span>.</span></span>
+<button type="button" style="height: 30px; padding: 0 12px; border-radius: 7px; border: 0; background: #E8915F; color: #141416; font-weight: 600; font-family: Inter, sans-serif; font-size: 12.5px; cursor: pointer">Ir para a sessão</button>
+<button type="button" style="height: 30px; padding: 0 10px; border-radius: 7px; border: 1px solid #5A3E2C; background: transparent; color: #ECECEE; font-family: Inter, sans-serif; font-size: 12.5px; cursor: pointer">Depois</button>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 14px">
+<span style="width: 24px; height: 24px; border-radius: 6px; background: #F2B48C; color: #141416; font-weight: 700; font-size: 10.5px; display: flex; align-items: center; justify-content: center">AP</span>
+<span style="font-weight: 600">api-pagamentos</span>
+<span style="color: #8B8B93">›</span>
+<span style="color: #D4D4D8">Migrar endpoints para v2</span>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; padding: 2px 7px; border-radius: 5px; background: #2A2A30; color: #C9C9CF">feat/v2</span>
+<span style="flex: 1 1 20px"></span>
+<span style="font-size: 12px; padding: 3px 8px; border-radius: 6px; background: #1E2A3A; color: #9CC3FF; font-weight: 600">app-mobile rodando</span>
+<button type="button" style="height: 28px; padding: 0 10px; border-radius: 7px; border: 1px solid #3A3A42; background: transparent; color: #ECECEE; font-family: Inter, sans-serif; font-size: 12.5px; cursor: pointer">Projetos <span style="font-family: 'JetBrains Mono', monospace; color: #A1A1AA">/p</span></button>
+</div>
+</div>
+</div>
+<div style="padding: 0 24px 24px; display: flex; justify-content: center">
+<div aria-label="Prompt nativo" style="width: 100%; max-width: 720px; height: 84px; box-sizing: border-box; border-radius: 14px; background: #19191C; border: 1px solid #26262B; padding: 14px 16px; color: #8B8B93; font-size: 13px">Prompt nativo do Claude Code</div>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mod: painel de projetos e faixa</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#141416}
+a{color:#E8915F}a:hover{color:#F2B48C}
+</style>
+</helmet>
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; background: #141416; color: #ECECEE; font-family: Inter, system-ui, sans-serif; font-size: 14px">
+
+<div aria-label="Sidebar nativa do Claude Code" style="flex: 0 0 248px; background: #111113; border-right: 1px solid #222226; padding: 18px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: #8B8B93; font-weight: 600">Sidebar nativa</span>
+<div style="height: 30px; border-radius: 8px; background: #1E1E22"></div>
+<div style="height: 10px; width: 60%; border-radius: 5px; background: #24242A; margin-top: 10px"></div>
+<div style="height: 10px; width: 85%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 70%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 78%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 50%; border-radius: 5px; background: #24242A; margin-top: 14px"></div>
+<div style="height: 10px; width: 80%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 65%; border-radius: 5px; background: #1E1E22"></div>
+</div>
+
+<div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column">
+<div style="height: 52px; border-bottom: 1px solid #222226; display: flex; align-items: center; padding: 0 24px; gap: 12px">
+<div style="height: 10px; width: 180px; border-radius: 5px; background: #24242A"></div>
+</div>
+<div aria-label="Conversa nativa" style="flex: 1; padding: 32px 24px; display: flex; justify-content: center">
+<div style="width: 100%; max-width: 720px; display: flex; flex-direction: column; gap: 16px">
+<div style="align-self: flex-end; width: 55%; height: 44px; border-radius: 14px; background: #1E1E22"></div>
+<div style="height: 10px; width: 90%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 76%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 10px; width: 84%; border-radius: 5px; background: #1E1E22"></div>
+<div style="height: 54px; border-radius: 10px; background: #19191C; border: 1px solid #222226"></div>
+<div style="height: 10px; width: 60%; border-radius: 5px; background: #1E1E22"></div>
+<span style="font-size: 12px; color: #8B8B93; margin-top: 8px">Conversa nativa (sem mudanças)</span>
+</div>
+</div>
+
+<div style="padding: 0 24px 10px; display: flex; justify-content: center">
+<div aria-label="Faixa do mod acima do prompt" style="width: 100%; max-width: 720px; box-sizing: border-box; display: flex; flex-direction: column; border-radius: 10px; background: #1F1F24; border: 1px solid #3A3A42; overflow: hidden">
+<sc-if value="{{bandOpen}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; padding: 8px; gap: 2px; border-bottom: 1px solid #2E2E35">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 4px 8px 6px">
+<span style="font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: #8B8B93; font-weight: 600">Sessões de api-pagamentos</span>
+<button type="button" style="height: 26px; padding: 0 9px; border-radius: 6px; border: 1px solid #3A3A42; background: transparent; color: #ECECEE; font-family: Inter, sans-serif; font-size: 12px; cursor: pointer">+ Nova sessão</button>
+</div>
+<sc-for list="{{bandSessions}}" as="s" hint-placeholder-count="4">
+<button type="button" onClick="{{s.pick}}" style="display: flex; align-items: center; gap: 10px; padding: 8px; border: 0; border-radius: 7px; background: {{s.bg}}; color: #ECECEE; cursor: pointer; text-align: left; font-family: Inter, sans-serif">
+<span style="width: 8px; height: 8px; flex: 0 0 8px; border-radius: 4px; background: {{s.dot}}"></span>
+<span style="flex: 1; min-width: 0; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{s.title}}</span>
+<span style="font-size: 12px; color: #A1A1AA; font-family: 'JetBrains Mono', monospace">{{s.branch}}</span>
+<span style="font-size: 12px; color: #A1A1AA; width: 92px; text-align: right">{{s.meta}}</span>
+</button>
+</sc-for>
+<span style="font-size: 11.5px; color: #8B8B93; padding: 6px 8px 2px">Para trocar de projeto, clique no nome do projeto: ele abre o painel.</span>
+</div>
+</sc-if>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px">
+<div style="flex: 1 1 360px; min-width: 0; display: flex; align-items: center; gap: 4px">
+<button type="button" title="Abrir painel de projetos" style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 8px 0 4px; border-radius: 7px; border: 0; background: transparent; color: #ECECEE; font-family: Inter, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; flex: 0 0 auto">
+<span style="width: 24px; height: 24px; border-radius: 6px; background: #F2B48C; color: #141416; font-weight: 700; font-size: 10.5px; display: flex; align-items: center; justify-content: center">AP</span>
+api-pagamentos
+</button>
+<span style="color: #8B8B93" aria-hidden="true">›</span>
+<button type="button" onClick="{{toggleBand}}" aria-expanded="{{bandOpen}}" title="Trocar de sessão neste projeto" style="display: flex; align-items: center; gap: 6px; min-width: 0; height: 32px; padding: 0 8px; border-radius: 7px; border: 1px solid {{sessBorder}}; background: {{sessBg}}; color: #ECECEE; font-family: Inter, sans-serif; font-size: 14px; cursor: pointer">
+<span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{curTitle}}</span>
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" stroke-width="2.4" aria-hidden="true" style="flex: 0 0 12px"><path d="{{chevPath}}"></path></svg>
+</button>
+<span style="font-family: 'JetBrains Mono', monospace; font-size: 11.5px; padding: 2px 7px; border-radius: 5px; background: #2A2A30; color: #C9C9CF; flex: 0 0 auto">{{curBranch}}</span>
+</div>
+<div style="display: flex; align-items: center; gap: 6px; flex: 0 0 auto">
+<span title="Outros projetos aguardando você" style="font-size: 12px; padding: 3px 8px; border-radius: 6px; background: #3A2A20; color: #F2B48C; font-weight: 600">1 aguardando</span>
+<span title="Outros projetos com sessão rodando" style="font-size: 12px; padding: 3px 8px; border-radius: 6px; background: #1E2A3A; color: #9CC3FF; font-weight: 600">1 rodando</span>
+<button type="button" aria-label="Abrir painel de projetos" title="Projetos (/p)" style="width: 30px; height: 30px; border-radius: 7px; border: 1px solid #3A3A42; background: transparent; color: #C9C9CF; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<div style="padding: 0 24px 24px; display: flex; justify-content: center">
+<div aria-label="Prompt nativo" style="width: 100%; max-width: 720px; height: 84px; box-sizing: border-box; border-radius: 14px; background: #19191C; border: 1px solid #26262B; padding: 14px 16px; color: #8B8B93; font-size: 13px">Prompt nativo do Claude Code</div>
+</div>
+</div>
+
+<aside aria-label="Painel de projetos do mod" style="flex: 1 1 340px; max-width: 380px; background: #18181B; border-left: 1px solid #3A3A42; display: flex; flex-direction: column; min-width: 0">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid #2A2A30">
+<span style="display: flex; align-items: baseline; gap: 8px"><span style="font-weight: 600">Projetos</span><span style="font-size: 12px; color: #A1A1AA">{{totalLabel}}</span></span>
+<button type="button" aria-label="Fechar painel" style="width: 28px; height: 28px; border-radius: 7px; border: 0; background: transparent; color: #A1A1AA; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+</button>
+</div>
+<div style="padding: 10px 12px; border-bottom: 1px solid #2A2A30; display: flex; flex-direction: column; gap: 8px">
+<label style="display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 7px; background: #222226; border: 1px solid #2E2E33; color: #8B8B93">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Filtrar projetos</span>
+<input type="text" placeholder="Filtrar por nome ou pasta" onInput="{{onSearch}}" style="flex: 1; min-width: 0; background: transparent; border: 0; outline: none; color: #ECECEE; font-family: Inter, sans-serif; font-size: 13px">
+</label>
+<div role="group" aria-label="Filtrar por status" style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="4">
+<button type="button" onClick="{{f.pick}}" aria-pressed="{{f.isOn}}" style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 14px; border: 1px solid {{f.border}}; background: {{f.bg}}; color: {{f.fg}}; font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; cursor: pointer">
+<span style="width: 7px; height: 7px; border-radius: 4px; background: {{f.dot}}"></span>{{f.label}} <span style="opacity: 0.75">{{f.count}}</span>
+</button>
+</sc-for>
+</div>
+</div>
+<div style="flex: 1; overflow-y: auto; padding: 4px 8px 16px; display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{sections}}" as="sec" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 8px 4px">
+<h3 style="margin: 0; font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: #8B8B93; font-weight: 600">{{sec.label}}</h3>
+<span style="font-size: 11px; color: #8B8B93">{{sec.count}}</span>
+</div>
+<sc-for list="{{sec.projects}}" as="p" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; border-radius: 9px; background: {{p.bg}}">
+<div style="display: flex; align-items: center; gap: 2px; padding-right: 4px">
+<button type="button" onClick="{{p.toggle}}" aria-expanded="{{p.isOpen}}" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 8px; border: 0; background: transparent; color: #ECECEE; cursor: pointer; text-align: left; font-family: Inter, sans-serif">
+<span style="width: 30px; height: 30px; flex: 0 0 30px; border-radius: 8px; background: {{p.color}}; color: #141416; font-weight: 700; font-size: 11.5px; display: flex; align-items: center; justify-content: center">{{p.initials}}</span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+<span style="font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.name}}</span>
+<span style="font-size: 11.5px; color: {{p.subColor}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{p.sub}}</span>
+</span>
+<span style="color: #8B8B93; font-size: 12px; width: 12px; text-align: center">{{p.chevron}}</span>
+</button>
+<button type="button" onClick="{{p.togglePin}}" aria-pressed="{{p.isPinned}}" aria-label="{{p.pinLabel}}" title="{{p.pinLabel}}" style="width: 30px; height: 30px; flex: 0 0 30px; border-radius: 7px; border: 0; background: transparent; color: {{p.pinColor}}; cursor: pointer; display: flex; align-items: center; justify-content: center">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="{{p.pinFill}}" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l-1 6 4 4H6l4-4z"></path><path d="M12 13v8" fill="none"></path></svg>
+</button>
+</div>
+<sc-if value="{{p.isOpen}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; padding: 0 6px 8px 46px; gap: 2px">
+<sc-for list="{{p.sessions}}" as="s" hint-placeholder-count="2">
+<div style="display: flex; align-items: center; gap: 8px; padding: 6px 6px; border-radius: 7px">
+<span style="width: 8px; height: 8px; flex: 0 0 8px; border-radius: 4px; background: {{s.dot}}"></span>
+<span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">
+<span style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{s.title}}</span>
+<span style="font-size: 11px; color: #A1A1AA">{{s.meta}}</span>
+</span>
+<sc-if value="{{s.isHere}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; color: #A1A1AA">esta sessão</span></sc-if>
+<sc-if value="{{s.canOpen}}" hint-placeholder-val="{{true}}"><button type="button" style="height: 26px; padding: 0 9px; border-radius: 6px; border: 1px solid #3A3A42; background: transparent; color: #ECECEE; font-family: Inter, sans-serif; font-size: 12px; cursor: pointer">Abrir</button></sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</sc-for>
+<sc-if value="{{isEmpty}}" hint-placeholder-val="{{false}}">
+<div style="padding: 28px 12px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center">
+<span style="color: #A1A1AA; font-size: 13px">Nenhum projeto com esse filtro.</span>
+<button type="button" onClick="{{clearFilters}}" style="height: 30px; padding: 0 12px; border-radius: 7px; border: 1px solid #3A3A42; background: transparent; color: #ECECEE; font-family: Inter, sans-serif; font-size: 12.5px; cursor: pointer">Limpar filtros</button>
+</div>
+</sc-if>
+</div>
+<div style="padding: 10px 14px; border-top: 1px solid #2A2A30; font-size: 11.5px; color: #A1A1AA">Fixados e status ficam salvos para todas as sessões</div>
+</aside>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.state || {};
+    const set = (patch) => this.setState(patch);
+    const open = st.open || { api: true, dash: true };
+    const pins = st.pins || { api: true, dash: true, app: true };
+    const filter = st.filter || 'all';
+    const q = (st.q || '').trim().toLowerCase();
+    const curId = st.cur || 'mig';
+    const bandOpen = !!st.bandOpen;
+    const ORANGE = '#E8915F', BLUE = '#7AB0FF', GRAY = '#5C5C64';
+    const S = (title, meta, dot, extra) => Object.assign({ title, meta, dot, isHere: false, canOpen: true }, extra || {});
+
+    const apiSessions = [
+      { id: 'mig', title: 'Migrar endpoints para v2', branch: 'feat/v2', meta: 'rodando agora', dot: BLUE },
+      { id: 'tst', title: 'Corrigir testes de integração', branch: 'fix/tests', meta: 'há 40 min', dot: GRAY },
+      { id: 'prw', title: 'Revisar PR de webhooks', branch: 'main', meta: 'hoje 10:42', dot: GRAY },
+      { id: 'idm', title: 'Adicionar idempotência', branch: 'feat/idem', meta: 'segunda', dot: GRAY }
+    ];
+    const curS = apiSessions.find((x) => x.id === curId) || apiSessions[0];
+
+    const P = (id, name, initials, color, path, status, last, sessions) => ({ id, name, initials, color, path, status, last, sessions });
+    const all = [
+      P('api', 'api-pagamentos', 'AP', '#F2B48C', '~/dev/api-pagamentos', 'running', 'agora',
+        apiSessions.slice(0, 3).map((x) => S(x.title, x.id === curId ? 'aberta aqui' : x.meta, x.dot, { isHere: x.id === curId, canOpen: x.id !== curId }))),
+      P('dash', 'dashboard-vendas', 'DV', '#A8DCC0', '~/dev/dashboard-vendas', 'waiting', 'agora',
+        [S('Gráfico de funil por região', 'pede para rodar npm run build', ORANGE), S('Exportar CSV', 'ontem', GRAY)]),
+      P('app', 'app-mobile', 'AM', '#9CC3FF', '~/dev/app-mobile', 'running', 'há 12 min',
+        [S('Tela de onboarding', 'rodando há 12 min', BLUE), S('Corrigir crash no Android', 'ontem', GRAY)]),
+      P('site', 'site-institucional', 'SI', '#C9B6F2', '~/dev/site-institucional', 'idle', 'quarta', [S('Nova página de carreiras', 'quarta', GRAY)]),
+      P('bot', 'bot-atendimento', 'BA', '#F2C9E0', '~/dev/bot-atendimento', 'idle', 'terça', [S('Fluxo de segunda via', 'terça', GRAY)]),
+      P('ui', 'lib-ui-components', 'UI', '#B8E0E8', '~/dev/lib-ui-components', 'idle', '24/10', [S('Componente de tabela', '24/10', GRAY)]),
+      P('infra', 'infra-terraform', 'IT', '#E8D49A', '~/dev/infra-terraform', 'idle', '08/10', [S('Módulo de filas', '08/10', GRAY)]),
+      P('gw', 'gateway-pagamentos-legado', 'GP', '#D9C2A6', '~/dev/legado/gateway', 'idle', '05/10', [S('Mapear endpoints antigos', '05/10', GRAY)]),
+      P('scripts', 'scripts-pessoais', 'SP', '#D1D1D6', '~/scripts', 'idle', '02/10', [S('Backup de fotos', '02/10', GRAY)])
+    ];
+
+    const subOf = (p) => p.status === 'waiting' ? ['Aguardando sua permissão', '#F2B48C']
+      : p.status === 'running' ? [p.id === 'api' ? '~/dev/api-pagamentos · ' + curS.branch : '1 sessão rodando', p.id === 'api' ? '#A1A1AA' : '#9CC3FF']
+      : ['Última atividade ' + p.last, '#A1A1AA'];
+    const matches = (p) => (filter === 'all' || p.status === filter) && (!q || p.name.includes(q) || p.path.includes(q));
+    const deco = (p) => {
+      const isOpen = !!open[p.id], isPinned = !!pins[p.id];
+      const sub = subOf(p);
+      return Object.assign({}, p, {
+        sub: sub[0], subColor: sub[1],
+        isOpen, chevron: isOpen ? '▾' : '▸', bg: isOpen ? '#1F1F24' : 'transparent',
+        isPinned, pinLabel: isPinned ? 'Desafixar ' + p.name : 'Fixar ' + p.name,
+        pinColor: isPinned ? '#E8915F' : '#6B6B73', pinFill: isPinned ? '#E8915F' : 'none',
+        toggle: () => set({ open: Object.assign({}, open, { [p.id]: !isOpen }) }),
+        togglePin: () => set({ pins: Object.assign({}, pins, { [p.id]: !isPinned }) })
+      });
+    };
+
+    const others = all.filter((p) => p.id !== 'api' && matches(p));
+    const pinned = others.filter((p) => pins[p.id]).map(deco);
+    const rest = others.filter((p) => !pins[p.id]).map(deco);
+    const sections = [];
+    if (matches(all[0])) sections.push({ label: 'Projeto atual', count: '', projects: [deco(all[0])] });
+    if (pinned.length) sections.push({ label: 'Fixados', count: String(pinned.length), projects: pinned });
+    if (rest.length) sections.push({ label: filter === 'all' && !q ? 'Todos os outros' : 'Resultados', count: String(rest.length), projects: rest });
+
+    const cnt = (k) => all.filter((p) => k === 'all' || p.status === k).length;
+    const F = (key, label, dot) => {
+      const isOn = filter === key;
+      return { key, label, dot, count: String(cnt(key)), isOn,
+        bg: isOn ? '#ECECEE' : 'transparent', fg: isOn ? '#141416' : '#C9C9CF', border: isOn ? '#ECECEE' : '#3A3A42',
+        pick: () => set({ filter: key }) };
+    };
+
+    const bandSessions = apiSessions.map((x) => Object.assign({}, x, {
+      meta: x.id === curId ? 'atual' : x.meta,
+      bg: x.id === curId ? '#2A2A31' : 'transparent',
+      pick: () => set({ cur: x.id, bandOpen: false })
+    }));
+
+    return {
+      bandOpen, bandSessions, curTitle: curS.title, curBranch: curS.branch,
+      toggleBand: () => set({ bandOpen: !bandOpen }),
+      sessBg: bandOpen ? '#2A2A31' : 'transparent', sessBorder: bandOpen ? '#4A4A52' : '#33333A',
+      chevPath: bandOpen ? 'm6 15 6-6 6 6' : 'm6 9 6 6 6-6',
+      totalLabel: all.length + ' no total',
+      filters: [F('all', 'Todos', '#8B8B93'), F('waiting', 'Aguardando', ORANGE), F('running', 'Rodando', BLUE), F('idle', 'Parados', GRAY)],
+      onSearch: (ev) => set({ q: ev.target.value }),
+      clearFilters: () => set({ filter: 'all', q: '' }),
+      sections, isEmpty: sections.length === 0
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest a change to navigation, status or the pane
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is hard to do today when moving between projects and sessions?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What should the band or pane do? Which surfaces does it matter on?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

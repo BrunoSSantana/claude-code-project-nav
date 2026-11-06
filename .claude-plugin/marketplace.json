@@ -1,0 +1,15 @@
+{
+  "name": "brunossantana",
+  "description": "Claude Code mods by Bruno Santana",
+  "owner": {
+    "name": "Bruno Santana",
+    "url": "https://github.com/BrunoSSantana"
+  },
+  "plugins": [
+    {
+      "name": "project-nav",
+      "source": "./",
+      "description": "Project and session navigation for Claude Code: context band, cross-session alerts and a projects pane"
+    }
+  ]
+}
