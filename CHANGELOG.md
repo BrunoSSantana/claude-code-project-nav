@@ -6,6 +6,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-11
+
 ### Added
 
 - "+ New session" in each expanded project of the projects pane, starting a session in that project's folder (F17).
@@ -45,6 +47,7 @@ First public release. Versions before 0.4.0 were development milestones (phases 
 - `/p <term>` autocomplete for projects and sessions (F16).
 - Desktop deep links to open sessions, with a copy-to-clipboard fallback in the terminal.
 
-[Unreleased]: https://github.com/BrunoSSantana/claude-code-project-nav/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/BrunoSSantana/claude-code-project-nav/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/BrunoSSantana/claude-code-project-nav/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/BrunoSSantana/claude-code-project-nav/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/BrunoSSantana/claude-code-project-nav/releases/tag/v0.4.0
