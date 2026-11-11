@@ -42,7 +42,7 @@ Visual rules for everything:
 - **Status colors**: orange `#E8915F` for waiting on you, blue `#7AB0FF` for running, grey `#5C5C64` for idle. Orange and blue because they stay distinguishable for people with color blindness.
 - **Project avatar**: a square with the name's two initials and a background color derived from the project path, always the same for the same project.
 - **Allowed elements**: only `Box`, `Text`, `Button`, `Input`, `Select` and `Svg`, all drawn by the host surface. No free-form HTML unless phase 0 approves the `Client` element.
-- **As implemented**: the avatar is an `Svg` (rounded square with initials) on Desktop and a `Text` with background in the terminal; counters and branch are `Box`es with a background; session title, filters, "Open" and ▦ are bordered `Button`s (`variant`). `Button` only takes text, so the pin is a glyph (★/☆) and status dots sit outside it.
+- **As implemented**: the avatar is an `Svg` (rounded square with initials) on Desktop and a `Text` with background in the terminal; counters and branch are `Box`es with a background; the status filters and "Open" are rounded pills drawn as `Svg` (a `Box` has no border radius) with a blank `Button` layered on top for the click; the project total goes in the pane title on Desktop. `Button` only takes text, so the pin is a glyph (★/☆) and status dots sit outside it.
 
 ## Functional requirements
 

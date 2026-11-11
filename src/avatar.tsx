@@ -201,3 +201,80 @@ export function PinToggle(elements: Elements, surface: string, key: string, isPi
   const { Svg } = elements
   return IconButton(elements, key, onPress, <Svg source={pinSvg(isPinned)} alt={label} width={15} height={15} />)
 }
+
+// Pílula de filtro do protótipo (mod-a-painel-e-faixa.html, linha 111): raio total, borda de
+// 1px, ponto de status, rótulo e contagem mais apagada. O Box não tem raio: é um Svg, com o
+// Button em branco por cima recortado por ela. Ativa: contraste máximo, como a "Todos 19".
+// Cores claras nos atributos, escuras em svgDark (o Svg não lê as variáveis do tema).
+const FILTER = {
+  light: { line: '#D4D4D8', fg: '#3F3F46', onBg: '#1F1F24', onFg: '#FFFFFF', dot: '#71717A' },
+  dark: { line: '#3A3A42', fg: '#C9C9CF', onBg: '#ECECEE', onFg: '#141416', dot: '#8B8B93' },
+} as const
+const FILTER_HEIGHT = 24
+// largura média de um caractere do Inter a 12px
+const charWidth = (text: string) => text.length * 7
+
+const escapeXml = (text: string) => text.replace(/[<>&"]/g, c => `&#${c.charCodeAt(0)};`)
+
+// `dot` undefined: o ponto neutro do "Todos", que na pílula ativa vira a cor do texto
+export const filterPillSvg = (label: string, count: number, dot: string | undefined, isOn: boolean) => {
+  const h = FILTER_HEIGHT
+  const pad = 11
+  const dotSize = 7
+  const textX = pad + dotSize + 6
+  const countText = String(count)
+  const width = Math.round(textX + charWidth(label) + 5 + charWidth(countText) + pad)
+  const { light, dark } = FILTER
+  const pick = (c: (typeof FILTER)['light' | 'dark']) =>
+    isOn ? { bg: c.onBg, line: c.onBg, fg: c.onFg, dot: dot ?? c.onFg } : { bg: 'none', line: c.line, fg: c.fg, dot: dot ?? c.dot }
+  const l = pick(light)
+  const d = pick(dark)
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${h}" viewBox="0 0 ${width} ${h}">`,
+    svgDark(`.bg{fill:${d.bg};stroke:${d.line}}.fg{fill:${d.fg}}.dot{fill:${d.dot}}`),
+    `<rect class="bg" x="0.5" y="0.5" width="${width - 1}" height="${h - 1}" rx="${(h - 1) / 2}" fill="${l.bg}" stroke="${l.line}"/>`,
+    `<circle class="dot" cx="${pad + dotSize / 2}" cy="${h / 2}" r="${dotSize / 2}" fill="${l.dot}"/>`,
+    `<text class="fg" x="${textX}" y="50%" dy="0.35em" font-family="Inter, system-ui, sans-serif" font-size="12"`,
+    ` font-weight="500" fill="${l.fg}">${escapeXml(label)}<tspan dx="5" fill-opacity="0.75">${countText}</tspan></text>`,
+    '</svg>',
+  ].join('')
+  return { svg, width, height: h }
+}
+
+const FILTER_CELLS = 30
+
+export function FilterPill(
+  elements: Elements,
+  key: string,
+  label: string,
+  count: number,
+  dot: string | undefined,
+  isOn: boolean,
+  onPress: () => void,
+) {
+  const { Box, Button } = elements
+  if (!('Svg' in elements)) return <Button key={key} plain label={`${label} ${count}`} onPress={onPress} />
+  const { Svg } = elements
+  const pill = filterPillSvg(label, count, dot, isOn)
+  return (
+    <Box key={`${key}-wrap`} position="relative">
+      <Svg source={pill.svg} alt={`${label} ${count}`} width={pill.width} height={pill.height} />
+      <Box position="absolute" top={0} left={0} right={0} bottom={0} overflow="hidden">
+        <Box position="absolute" top={0} bottom={0} left={0} width={FILTER_CELLS}>
+          <Button key={key} plain onPress={onPress}>
+            {BLANK.repeat(FILTER_CELLS)}
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  )
+}
+
+// Lupa do campo de busca do protótipo (linha 105).
+export const SEARCH_SVG = [
+  '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"',
+  ' stroke="#71717A" stroke-width="2.2" stroke-linecap="round">',
+  svgDark('svg{stroke:#8B8B93}'),
+  '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  '</svg>',
+].join('')

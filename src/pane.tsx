@@ -8,7 +8,7 @@ import type { EngineInterface, EventOf } from 'claude-code'
 import type { ProjectRow, StatusFilter } from '../types'
 import { homeDir } from './index'
 import { writeShared } from './live'
-import { Avatar, PillButton, PinToggle, Pressable } from './avatar'
+import { Avatar, FilterPill, PillButton, PinToggle, Pressable, SEARCH_SVG } from './avatar'
 import {
   filterProjects,
   PANE,
@@ -29,8 +29,9 @@ const pins = atom({ plugin: 'project-nav', key: 'pins' } as const, {})
 const query = atom({ plugin: 'project-nav', key: 'query' } as const, '')
 const filter = atom({ plugin: 'project-nav', key: 'filter' } as const, 'all')
 
-const FILTERS: { key: StatusFilter; label: string; dot: string }[] = [
-  { key: 'all', label: 'Todos', dot: THEME.muted },
+// `dot` undefined: o ponto neutro do "Todos", que segue o tema
+const FILTERS: { key: StatusFilter; label: string; dot: string | undefined }[] = [
+  { key: 'all', label: 'Todos', dot: undefined },
   { key: 'waiting', label: 'Aguardando', dot: STATUS_COLOR.waiting },
   { key: 'running', label: 'Rodando', dot: STATUS_COLOR.running },
   { key: 'idle', label: 'Parados', dot: STATUS_COLOR.idle },
@@ -50,9 +51,25 @@ export async function wasPaneOpen($: EngineInterface) {
   return saved?.paneOpen === true
 }
 
+// Como no protótipo, o total vai no cabeçalho, ao lado de "Projetos". O título é da
+// moldura do painel: abrir um id já aberto só troca o título.
+export const paneTitle = (total: number | undefined) => (total ? `Projetos · ${total} no total` : 'Projetos')
+let shownTitle: string | undefined
+
 export async function openPane($: EngineInterface) {
-  await $.ui.open({ id: PANE, title: 'Projetos' })
+  const view = await read($, projects)
+  shownTitle = paneTitle(view?.list.length)
+  await $.ui.open({ id: PANE, title: shownTitle })
   await rememberPane($, true)
+}
+
+// Depois de cada varredura: com o painel aberto e o total mudado, troca o título.
+export async function retitlePane($: EngineInterface, total: number) {
+  const title = paneTitle(total)
+  if (title === shownTitle) return
+  if (!(await $.ui.panes()).some(pane => pane.id === PANE)) return
+  shownTitle = title
+  await $.ui.open({ id: PANE, title })
 }
 
 // F5 e F7: o botão de grade e o /p abrem e fecham.
@@ -228,17 +245,21 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
 
   return (
     <Box flexDirection="column" gap={1}>
-      {/* o título "Projetos" já vem na moldura do painel; aqui fica só o total */}
-      <Text dimColor size="caption">{`${view.list.length} projetos no total`}</Text>
+      {/* no Desktop o total está no título do painel (paneTitle); o terminal não desenha
+          título com um painel só, então lá ele fica no corpo */}
+      {!isDesktop && <Text dimColor size="caption">{`${view.list.length} projetos no total`}</Text>}
       {Input && (
-        <Box flexDirection="column" width="100%">
-          <Input
-            key="search"
-            placeholder="Filtrar por nome ou pasta"
-            value={term}
-            onInput={value => update($, query, () => value)}
-            onSubmit={value => update($, query, () => value)}
-          />
+        <Box width="100%" alignItems="center" gap={1}>
+          {'Svg' in elements && isDesktop && <elements.Svg source={SEARCH_SVG} alt="Buscar" width={14} height={14} />}
+          <Box flexGrow={1} flexDirection="column">
+            <Input
+              key="search"
+              placeholder="Filtrar por nome ou pasta"
+              value={term}
+              onInput={value => update($, query, () => value)}
+              onSubmit={value => update($, query, () => value)}
+            />
+          </Box>
         </Box>
       )}
       <Box columnGap={1} rowGap={0} flexWrap="wrap">
@@ -246,23 +267,11 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
           const isOn = status === f.key
           const label = `${f.label} ${counts[f.key]}`
           const pick = () => update($, filter, () => f.key)
-          // pílula do protótipo: ponto colorido, rótulo e contagem; a ativa fica clara
-          const pill = (
-            <Box backgroundColor={isOn ? THEME.inverseBg : THEME.surface} paddingX={1} gap={1} alignItems="center">
-              <Text color={f.dot} size="caption">
-                ●
-              </Text>
-              <Text color={isOn ? THEME.inverseText : THEME.text} size="footnote">
-                {f.label}
-              </Text>
-              <Text color={isOn ? THEME.inverseText : THEME.muted} size="footnote">
-                {String(counts[f.key])}
-              </Text>
-            </Box>
-          )
-          const fallback = (
+          // Desktop: a pílula arredondada do protótipo, em Svg (FilterPill)
+          if (isDesktop) return FilterPill(elements, `filter-${f.key}`, f.label, counts[f.key], f.dot, isOn, pick)
+          return (
             <Box key={`f-${f.key}`} gap={1} alignItems="center">
-              <Text color={f.dot}>●</Text>
+              <Text color={f.dot ?? THEME.muted}>●</Text>
               <Button
                 key={`filter-${f.key}`}
                 variant={isOn ? 'primary' : 'secondary'}
@@ -271,7 +280,6 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
               />
             </Box>
           )
-          return Pressable(elements, e.surface, `filter-${f.key}`, label, pick, pill, label.length + 4, fallback)
         })}
       </Box>
       {sections.length === 0 && view.list.length === 0 && <Text dimColor>Nenhuma sessão do Desktop encontrada.</Text>}
