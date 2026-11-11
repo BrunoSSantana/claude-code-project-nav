@@ -11,7 +11,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 ### Fixed
 
 - Pane and band colors now follow Claude's light and dark themes: the open project, filter pills, counters, alert and borders no longer stay dark in the light theme.
-- Hovering a session in the projects pane highlights the whole session box, not just a strip at its top.
+- In the projects pane, the hover highlight of a session stays on its "Open" button instead of a strip across the row; the row shows its border on hover.
 
 ## [0.4.0] - 2026-11-06
 

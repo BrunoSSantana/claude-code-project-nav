@@ -85,7 +85,7 @@ test('o painel lista os projetos por seção, com o atual aberto (F8 a F10)', as
     expect(await ui.find({ type: 'Text', text: /esta sessão/ })).toBeTruthy()
     expect(await ui.find({ type: 'Button', key: 'go-cli-2' })).toBeTruthy()
     expect(await ui.find({ type: 'Button', key: 'go-cli-1' })).toBeFalsy()
-    // no Desktop um só Button em branco, de duas linhas, cobre a caixa inteira (o "Abrir" é desenho)
+    // no Desktop um só Button em branco, recortado sobre a pílula "Abrir" (que é desenho)
     if (surface === 'desktop') {
       expect(await ui.find({ type: 'Button', key: 'go-cli-2-1' })).toBeFalsy()
       expect(await ui.find({ type: 'Button', key: 'open-cli-2' })).toBeFalsy()

@@ -81,26 +81,6 @@ export function Pressable(
   )
 }
 
-// Linha clicável inteira: um Button em branco numa camada por cima, mais largo que a linha.
-// O Button do Desktop não quebra linha (`white-space: nowrap`), então texto de várias linhas
-// não o deixa mais alto: quem dá a altura é a camada, presa ao topo e à base da linha
-// (`top` e `bottom`), e o Button, filho de um flex em linha, estica até ela. Assim o destaque
-// do hover cobre a caixa toda, não só uma faixa no topo. A camada tem largura própria, para
-// o Button não encolher (encolhido, o Desktop corta com "…" visível); quem a corta é a
-// linha, com `overflow="hidden"`.
-const ROW_CELLS = 200
-
-export function RowPress(elements: Elements, key: string, onPress: () => void) {
-  const { Box, Button } = elements
-  return (
-    <Box position="absolute" top={0} bottom={0} left={0} width={ROW_CELLS}>
-      <Button key={key} plain onPress={onPress}>
-        {BLANK.repeat(ROW_CELLS)}
-      </Button>
-    </Box>
-  )
-}
-
 // Pílula arredondada (o "Abrir" do protótipo): o Box não tem raio, então é um Svg.
 // Invertida (contraste máximo) é a do hover. Cores claras nos atributos, escuras em svgDark.
 const PILL = {
@@ -130,6 +110,32 @@ export function Pill(elements: Elements, text: string, isInverted = false) {
   }
   const { Text } = elements
   return <Text dimColor>{text}</Text>
+}
+
+// "Abrir" clicável: a pílula desenhada e, por cima, um Button em branco recortado no tamanho
+// dela, então o destaque nativo do hover fica só sobre a pílula. O Button vai numa camada
+// mais larga que a pílula (encolhido, o Desktop corta com "…" visível) e quem o corta é a
+// caixa da pílula, com `overflow="hidden"`. No hover dela a pílula inverte (grupo `scope`).
+const PILL_CELLS = 30
+
+export function PillButton(elements: Elements, key: string, text: string, onPress: () => void, scope: string) {
+  const { Box, Button } = elements
+  if (!('Svg' in elements)) return <Button key={key} plain label={text} onPress={onPress} />
+  return (
+    <Box key={`${key}-wrap`} position="relative" hover={{ scope }}>
+      {Pill(elements, text)}
+      <Box position="absolute" top={0} left={0} display="none" hover={{ scope, display: 'flex' }}>
+        {Pill(elements, text, true)}
+      </Box>
+      <Box position="absolute" top={0} left={0} right={0} bottom={0} overflow="hidden">
+        <Box position="absolute" top={0} bottom={0} left={0} width={PILL_CELLS}>
+          <Button key={key} plain onPress={onPress}>
+            {BLANK.repeat(PILL_CELLS)}
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  )
 }
 
 // Botão de ícone: aqui o Button em branco fica no fluxo e define o tamanho e o destaque

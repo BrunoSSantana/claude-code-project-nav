@@ -8,7 +8,7 @@ import type { EngineInterface, EventOf } from 'claude-code'
 import type { ProjectRow, StatusFilter } from '../types'
 import { homeDir } from './index'
 import { writeShared } from './live'
-import { Avatar, Pill, PinToggle, Pressable, RowPress } from './avatar'
+import { Avatar, PillButton, PinToggle, Pressable } from './avatar'
 import {
   filterProjects,
   PANE,
@@ -178,11 +178,9 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
                   </Box>
                 )
               }
-              // F10, Desktop: a sessão é uma caixa; no hover a borda arredondada aparece e o
-              // "Abrir" inverte (um grupo, `scope`, liga os dois). O clique é um Button em branco
-              // da altura da caixa (RowPress), mais largo e cortado por ela: o destaque nativo dele,
-              // que o Desktop desenha de todo jeito, vira o fundo da caixa inteira no hover.
-              // A aberta aqui não tem clique nem hover.
+              // F10, Desktop: a sessão é uma caixa; no hover dela a borda arredondada aparece. O
+              // clique é só o "Abrir" (PillButton), que inverte no próprio hover. A aberta aqui
+              // não tem clique nem hover.
               const scope = `s-${session.id}`
               return (
                 <Box
@@ -210,14 +208,8 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
                       esta sessão
                     </Text>
                   ) : (
-                    <Box position="relative">
-                      {Pill(elements, 'Abrir')}
-                      <Box position="absolute" top={0} left={0} display="none" hover={{ scope, display: 'flex' }}>
-                        {Pill(elements, 'Abrir', true)}
-                      </Box>
-                    </Box>
+                    PillButton(elements, `go-${session.id}`, 'Abrir', go, `open-${session.id}`)
                   )}
-                  {!isHere && RowPress(elements, `go-${session.id}`, go)}
                 </Box>
               )
             })}
