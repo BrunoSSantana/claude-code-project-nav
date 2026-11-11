@@ -5,6 +5,7 @@ import type { EventOf } from 'claude-code'
 import type { EngineInterface, RenderChildren } from 'claude-code'
 
 import { avatarColor, initials } from './model'
+import { svgDark } from './theme'
 
 type Elements = ReturnType<EngineInterface['ui']['resolve']>
 
@@ -97,15 +98,25 @@ export function RowPress(elements: Elements, key: string, onPress: () => void, l
 }
 
 // Pílula arredondada (o "Abrir" do protótipo): o Box não tem raio, então é um Svg.
-// Invertida (clara, texto escuro) é a do hover.
-const pillSvg = (text: string, width: number, isInverted: boolean) =>
-  [
+// Invertida (contraste máximo) é a do hover. Cores claras nos atributos, escuras em svgDark.
+const PILL = {
+  light: { bg: '#EAEAED', fg: '#3F3F46', invBg: '#1F1F24', invFg: '#FFFFFF' },
+  dark: { bg: '#2E2E36', fg: '#C9C9CF', invBg: '#ECECEE', invFg: '#141416' },
+} as const
+
+const pillSvg = (text: string, width: number, isInverted: boolean) => {
+  const pick = (c: { bg: string; fg: string; invBg: string; invFg: string }) => (isInverted ? { bg: c.invBg, fg: c.invFg } : { bg: c.bg, fg: c.fg })
+  const light = pick(PILL.light)
+  const dark = pick(PILL.dark)
+  return [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="20" viewBox="0 0 ${width} 20">`,
-    `<rect width="${width}" height="20" rx="10" fill="${isInverted ? '#ECECEE' : '#2E2E36'}"/>`,
-    `<text x="50%" y="50%" dy="0.35em" text-anchor="middle" font-family="Inter, system-ui, sans-serif"`,
-    ` font-size="11.5" font-weight="${isInverted ? 600 : 400}" fill="${isInverted ? '#141416' : '#C9C9CF'}">${text}</text>`,
+    svgDark(`.bg{fill:${dark.bg}}.fg{fill:${dark.fg}}`),
+    `<rect class="bg" width="${width}" height="20" rx="10" fill="${light.bg}"/>`,
+    `<text class="fg" x="50%" y="50%" dy="0.35em" text-anchor="middle" font-family="Inter, system-ui, sans-serif"`,
+    ` font-size="11.5" font-weight="${isInverted ? 600 : 400}" fill="${light.fg}">${text}</text>`,
     '</svg>',
   ].join('')
+}
 
 export function Pill(elements: Elements, text: string, isInverted = false) {
   const width = Math.round(text.length * 6.5 + 22)
@@ -149,7 +160,8 @@ const pinSvg = (isPinned: boolean) => {
 // Grade 2×2 da faixa (F5): abre e fecha o painel. O glifo ▦ fica só no terminal.
 const GRID_SVG = [
   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"',
-  ' stroke="#C9C9CF" stroke-width="2" stroke-linejoin="round">',
+  ' stroke="#52525B" stroke-width="2" stroke-linejoin="round">',
+  svgDark('svg{stroke:#C9C9CF}'),
   '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>',
   '<rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   '</svg>',

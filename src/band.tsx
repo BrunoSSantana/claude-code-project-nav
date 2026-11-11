@@ -8,6 +8,7 @@ import { homeDir } from './index'
 import { writeShared } from './live'
 import { Avatar, Chip, GridToggle } from './avatar'
 import { projectName, relativeTime, sortSessions, STATUS_COLOR } from './model'
+import { THEME } from './theme'
 import { newSession, openSession } from './open'
 import { openPane, togglePane } from './pane'
 import { countOthers, pendingAlert, reasonHash } from './status'
@@ -21,11 +22,11 @@ const projects = atom({ plugin: 'project-nav', key: 'projects' } as const, null,
 const others = atom({ plugin: 'project-nav', key: 'others' } as const, [], { shape: 'others-1' })
 const dismissed = atom({ plugin: 'project-nav', key: 'dismissed' } as const, {})
 
-// Cores dos contadores e do alerta, do protótipo.
+// Cores dos contadores e do alerta: chaves de tema, seguem o claro e o escuro.
 const CHIP = {
-  waiting: { bg: '#3A2A20', fg: '#F2B48C' },
-  running: { bg: '#1E2A3A', fg: '#9CC3FF' },
-  branch: { bg: '#2A2A30', fg: '#C9C9CF' },
+  waiting: { bg: THEME.surface, fg: THEME.waiting },
+  running: { bg: THEME.surface, fg: THEME.running },
+  branch: { bg: THEME.surface, fg: THEME.muted },
 } as const
 
 const MAX_ROWS = 8
@@ -61,8 +62,8 @@ export async function renderBand($: EngineInterface, e: EventOf['ui.render'] & {
           flexDirection="column"
           gap={1}
           borderStyle="round"
-          borderColor="#5A3E2C"
-          backgroundColor="#241C17"
+          borderColor={THEME.waiting}
+          backgroundColor={THEME.surface}
           paddingX={1}
           marginBottom={1}
         >
@@ -70,7 +71,7 @@ export async function renderBand($: EngineInterface, e: EventOf['ui.render'] & {
             <Text color={CHIP.waiting.fg} bold>
               {`${nameOf(alert.projectPath)} precisa de você.`}
             </Text>
-            <Text color="#D9B79F" wrap="truncate-end">
+            <Text wrap="truncate-end">
               {`A sessão “${alert.title || 'sem título'}” ${alert.reason ? `pede: ${alert.reason}` : 'aguarda você'}.`}
             </Text>
           </Box>
@@ -86,7 +87,7 @@ export async function renderBand($: EngineInterface, e: EventOf['ui.render'] & {
         </Box>
       )}
       {isOpen && (
-        <Box flexDirection="column" paddingBottom={1} marginBottom={1} borderStyle="single" borderColor="#2E2E35">
+        <Box flexDirection="column" paddingBottom={1} marginBottom={1} borderStyle="single" borderColor={THEME.border}>
           <Box justifyContent="space-between" alignItems="center">
             <Text dimColor bold size="caption">
               SESSÕES DE {current.name.toUpperCase()}

@@ -19,6 +19,7 @@ import {
   statusCounts,
 } from './model'
 import { openSession } from './open'
+import { THEME } from './theme'
 
 // O scan do engine só lê atoms declarados no próprio arquivo: cada um repete os seus.
 const here = atom({ plugin: 'project-nav', key: 'here' } as const, null, { shape: 'here-1' })
@@ -29,7 +30,7 @@ const query = atom({ plugin: 'project-nav', key: 'query' } as const, '')
 const filter = atom({ plugin: 'project-nav', key: 'filter' } as const, 'all')
 
 const FILTERS: { key: StatusFilter; label: string; dot: string }[] = [
-  { key: 'all', label: 'Todos', dot: '#8B8B93' },
+  { key: 'all', label: 'Todos', dot: THEME.muted },
   { key: 'waiting', label: 'Aguardando', dot: STATUS_COLOR.waiting },
   { key: 'running', label: 'Rodando', dot: STATUS_COLOR.running },
   { key: 'idle', label: 'Parados', dot: STATUS_COLOR.idle },
@@ -66,8 +67,8 @@ export async function togglePane($: EngineInterface) {
   return false
 }
 
-const SUB_COLOR = { waiting: '#F2B48C', running: '#9CC3FF' } as const
-const OPEN_BG = '#1F1F24'
+const SUB_COLOR = { waiting: THEME.waiting, running: THEME.running } as const
+const OPEN_BG = THEME.surface
 
 export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
   const elements = $.ui.resolve(e)
@@ -190,7 +191,7 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
                   overflow="hidden"
                   borderStyle="round"
                   borderColor={OPEN_BG}
-                  hover={isHere ? undefined : { scope, borderColor: '#3A3A42' }}
+                  hover={isHere ? undefined : { scope, borderColor: THEME.border }}
                   paddingX={1}
                   gap={1}
                   alignItems="center"
@@ -255,14 +256,14 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
           const pick = () => update($, filter, () => f.key)
           // pílula do protótipo: ponto colorido, rótulo e contagem; a ativa fica clara
           const pill = (
-            <Box backgroundColor={isOn ? '#ECECEE' : '#222226'} paddingX={1} gap={1} alignItems="center">
+            <Box backgroundColor={isOn ? THEME.inverseBg : THEME.surface} paddingX={1} gap={1} alignItems="center">
               <Text color={f.dot} size="caption">
                 ●
               </Text>
-              <Text color={isOn ? '#141416' : '#C9C9CF'} size="footnote">
+              <Text color={isOn ? THEME.inverseText : THEME.text} size="footnote">
                 {f.label}
               </Text>
-              <Text color={isOn ? '#141416' : '#8B8B93'} size="footnote">
+              <Text color={isOn ? THEME.inverseText : THEME.muted} size="footnote">
                 {String(counts[f.key])}
               </Text>
             </Box>
@@ -305,7 +306,7 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
           </Box>
         </Box>
       ))}
-      <Box borderStyle="single" borderColor="#2A2A30" paddingTop={1}>
+      <Box borderStyle="single" borderColor={THEME.border} paddingTop={1}>
         <Text dimColor size="footnote">
           Fixados e status ficam salvos para todas as sessões
         </Text>
