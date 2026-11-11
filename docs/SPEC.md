@@ -60,7 +60,7 @@ Each requirement has a code that phases and tests refer to.
 ### Projects pane
 
 - **F7 · Open and close**: `/p` and the band button. The pane remembers whether it was open across sessions.
-- **F8 · Sections**: "Current project" on top, then "Pinned", then "All others". Header with the project total.
+- **F8 · Sections**: "Pinned" on top, then "Current project", then "All others". Header with the project total. (Until 0.4.0 "Current project" came first; pinned moved to the top in 0.4.1 so that pinning visibly lifts a project.)
 - **F9 · Project row**: avatar, name, a status line ("Waiting for your permission", "1 session running" or "Last activity <date>") and the pin button. Clicking the row expands that project's sessions.
 - **F10 · Project sessions**: up to 5 most recent, with status dot, title and last activity. The open session shows "this session"; clicking any other opens it.
 - **F11 · Pin**: the pin toggles. Pins are saved for every session on the machine. The current project always shows under "Current project", even when pinned.

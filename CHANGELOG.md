@@ -8,6 +8,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [0.4.1] - 2026-11-11
 
+### Changed
+
+- Pinned projects now sit at the top of the projects pane, above the current project, so pinning visibly moves a project up. The current project stays in its own section even when pinned.
+
 ### Fixed
 
 - Pane and band colors now follow Claude's light and dark themes: the open project, filter pills, counters, alert and borders no longer stay dark in the light theme.

@@ -162,3 +162,34 @@ test('no Desktop o Button sobreposto não desenha texto visível', async ($, on)
   }
   await ui.unmount()
 })
+
+test('fixar pelo alfinete move o projeto para Fixados na hora (F11)', async ($, on) => {
+  // só o que vem do scan é semeado: pins passa pelo $.state de verdade
+  on('state.get', ($, e, next) =>
+    e.key === 'here'
+      ? { value: { value: { shape: 'here-1', value: HERE }, version: 1 } }
+      : e.key === 'projects'
+        ? { value: { value: { shape: 'projects-1', value: PROJECTS }, version: 1 } }
+        : next(e),
+  )
+  const writes: string[] = []
+  on('env.get', () => ({ value: '/home/a' }))
+  on('fs.write', (_, e) => {
+    writes.push(e.path)
+    return { value: undefined }
+  })
+  for (const surface of ['terminal', 'desktop'] as const) {
+    const ui = await $.ui.mount({ ...PANE, surface })
+    expect(await ui.find({ type: 'Text', text: /FIXADOS/ })).toBeFalsy()
+    await ui.press({ key: 'pin-/w/job' })
+    expect(await ui.find({ type: 'Text', text: /FIXADOS/ })).toBeTruthy()
+    // fixados vão para o topo do painel, acima do projeto atual (F8)
+    const order = (await ui.findAll({ type: 'Button' })).map(b => b.key).filter(k => k?.startsWith('pin-'))
+    expect(order[0]).toBe('pin-/w/job')
+    expect(order.indexOf('pin-/w/job')).toBeLessThan(order.indexOf('pin-/w/project-mods'))
+    await ui.press({ key: 'pin-/w/job' })
+    expect(await ui.find({ type: 'Text', text: /FIXADOS/ })).toBeFalsy()
+    await ui.unmount()
+  }
+  expect(writes).toContain('/home/a/.claude/project-nav/pins.json')
+})
