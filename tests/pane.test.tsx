@@ -30,7 +30,7 @@ const PROJECTS: Projects = {
   list: [
     project('/w/work/checkout-web', 'Storefront', { status: 'waiting' }),
     project('/w/project-mods', 'project-mods', {
-      sessionCount: 7,
+      sessionCount: 2,
       sessions: [session('cli-1', 9), session('cli-2', 8)],
     }),
     project('/w/job', 'Job'),
@@ -95,10 +95,42 @@ test('o painel lista os projetos por seção, com o atual aberto (F8 a F10)', as
       expect(await ui.find({ type: 'Button', key: 'go-cli-2-1' })).toBeFalsy()
       expect(await ui.find({ type: 'Button', key: 'open-cli-2' })).toBeFalsy()
     }
-    expect(await ui.find({ type: 'Text', text: /\+ 5 na barra lateral/ })).toBeTruthy()
+    // F17: nova sessão no projeto aberto
+    expect(await ui.find({ type: 'Button', key: 'new-/w/project-mods' })).toBeTruthy()
+    expect(await ui.find({ type: 'Button', key: 'new-/w/job' })).toBeFalsy()
     // os outros ficam fechados
     expect(await ui.find({ type: 'Button', key: 'go-Job-1' })).toBeFalsy()
     expect(await ui.find({ type: 'Button', key: 'chev-/w/job' })).toBeTruthy()
+    await ui.unmount()
+  }
+})
+
+test('o painel pagina as sessões do projeto, 5 por página (F18)', async ($, on) => {
+  const many = Array.from({ length: 12 }, (_, i) => session(`m${i}`, 100 - i))
+  const list = [project('/w/big', 'big', { sessionCount: 12, sessions: many })]
+  on('state.get', ($, e, next) =>
+    e.key === 'projects'
+      ? { value: { value: { shape: 'projects-1', value: { current: '/w/big', list } }, version: 1 } }
+      : e.key === 'here'
+        ? { value: { value: { shape: 'here-1', value: HERE }, version: 1 } }
+        : next(e),
+  )
+  for (const surface of ['terminal', 'desktop'] as const) {
+    const ui = await $.ui.mount({ ...PANE, surface })
+    expect(await ui.find({ type: 'Text', text: /^1–5 de 12$/ })).toBeTruthy()
+    expect(await ui.find({ type: 'Button', key: 'go-m4' })).toBeTruthy()
+    expect(await ui.find({ type: 'Button', key: 'go-m5' })).toBeFalsy()
+    expect(await ui.find({ type: 'Button', key: 'prev-/w/big' })).toBeFalsy()
+    await ui.press({ key: 'next-/w/big' })
+    expect(await ui.find({ type: 'Text', text: /^6–10 de 12$/ })).toBeTruthy()
+    expect(await ui.find({ type: 'Button', key: 'go-m5' })).toBeTruthy()
+    expect(await ui.find({ type: 'Button', key: 'go-m4' })).toBeFalsy()
+    await ui.press({ key: 'next-/w/big' })
+    expect(await ui.find({ type: 'Text', text: /^11–12 de 12$/ })).toBeTruthy()
+    expect(await ui.find({ type: 'Button', key: 'next-/w/big' })).toBeFalsy()
+    await ui.press({ key: 'prev-/w/big' })
+    await ui.press({ key: 'prev-/w/big' })
+    expect(await ui.find({ type: 'Text', text: /^1–5 de 12$/ })).toBeTruthy()
     await ui.unmount()
   }
 })

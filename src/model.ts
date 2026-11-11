@@ -101,7 +101,16 @@ export const mergeSessions = (cli: readonly CliSession[], desk: readonly Desktop
 
 // Projetos da barra lateral do Desktop. Regra em docs/SPEC.md, "Projects: the Desktop rule".
 
+// F10 e F18: sessões por página no painel.
 export const PANE_SESSIONS = 5
+
+// F18: a página `page` (base 0) de uma lista, limitada às páginas que existem.
+export const pageOf = <T>(rows: readonly T[], page: number, size = PANE_SESSIONS) => {
+  const pages = Math.max(1, Math.ceil(rows.length / size))
+  const at = Math.min(Math.max(0, Math.floor(page) || 0), pages - 1)
+  const from = at * size
+  return { rows: rows.slice(from, from + size), page: at, pages, from, to: Math.min(from + size, rows.length) }
+}
 
 // O nome que o Desktop dá a um repo: só para origin no github.com, com o parser do app.
 const SCP_REMOTE = /^[^@/:#?\s]+@([^:\s]+):([^/\s]+)\/([^/\s]+?)(?:\.git)?$/
@@ -163,7 +172,7 @@ export const groupProjects = (
       lastActivity: Math.max(...all.map(row => row.lastActivity)),
       sessionCount: all.length,
       runningCount: all.filter(row => row.status === 'running').length,
-      sessions: all.slice(0, PANE_SESSIONS),
+      sessions: all,
     }
   })
   return sortProjects(rows)

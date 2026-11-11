@@ -62,12 +62,14 @@ Each requirement has a code that phases and tests refer to.
 - **F7 · Open and close**: `/p` and the band button. The pane remembers whether it was open across sessions.
 - **F8 · Sections**: "Pinned" on top, then "Current project", then "All others". Header with the project total. (Until 0.4.0 "Current project" came first; pinned moved to the top in 0.4.1 so that pinning visibly lifts a project.)
 - **F9 · Project row**: avatar, name, a status line ("Waiting for your permission", "1 session running" or "Last activity <date>") and the pin button. Clicking the row expands that project's sessions.
-- **F10 · Project sessions**: up to 5 most recent, with status dot, title and last activity. The open session shows "this session"; clicking any other opens it.
+- **F10 · Project sessions**: the most recent 5 at a time (see F18), with status dot, title and last activity. The open session shows "this session"; clicking any other opens it.
 - **F11 · Pin**: the pin toggles. Pins are saved for every session on the machine. The current project always shows under "Current project", even when pinned.
 - **F12 · Search**: a field filtering by name or path, case-insensitive. With a filter active, "All others" becomes "Results".
 - **F13 · Status filters**: All, Waiting, Running and Idle buttons, each with its count. They combine with search.
 - **F14 · Empty**: with no results, shows "No project matches this filter" and a "Clear filters" button.
 - **F15 · Order**: within each section, waiting first, then running, then by last activity, most recent first.
+- **F17 · New session in a project**: an expanded project shows "+ New session", which starts a session in that project's folder (same deep link and fallback as the band's).
+- **F18 · Session pages**: a project with more than 5 sessions pages them, 5 per page, with ‹ and › and a "6–10 of 72" counter. The page is kept per project for the session.
 
 ### Prompt search
 
@@ -176,7 +178,8 @@ Implementation notes:
 Implementation notes:
 - Source: the Desktop's `local_*.json` from the current session's `<account>/<org>` folder, archived ones excluded; key `originCwd || cwd`; name from the GitHub repo (`origin`) or the folder. Pure functions in `model.ts` (`sidebarScope`, `groupProjects`, `projectLabel`, `paneSections`, `projectStatusLine`), reads in `readProjects` (`index.ts`), in the same scan as the band (on open, every 30 s and every turn).
 - `git remote get-url origin` runs once per project and is cached until the mod reloads.
-- A project with more than 5 sessions shows "+ N in the Desktop sidebar".
+- A project with more than 5 sessions pages them (F18); until 0.4.1 it only showed "+ N in the Desktop sidebar". `ProjectRow.sessions` holds every session, and `pageOf` (`model.ts`) cuts the page; the page per project lives in `$.state` `sessionPage`.
+- F17: "+ New session" in each expanded project uses `newSession` (`open.ts`) with the project's path.
 - F7: open/closed is kept in `nav:ui.paneOpen` in `$.store`; the pane's X records closed (`ui.close`, origin `person`). A new session reopens the pane if it was open.
 
 ### Phase 3 · Cross-session status (F2, F6)

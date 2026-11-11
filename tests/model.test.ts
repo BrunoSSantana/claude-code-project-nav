@@ -9,6 +9,7 @@ import {
   groupProjects,
   initials,
   mergeSessions,
+  pageOf,
   paneSections,
   pickTitle,
   projectLabel,
@@ -144,11 +145,20 @@ test('groupProjects agrupa por originCwd e junta worktrees ao repo', async () =>
   })
 })
 
-test('groupProjects mostra até 5 sessões, mas conta todas (F10)', async () => {
+test('groupProjects guarda todas as sessões, mais recente primeiro (F10, F18)', async () => {
   const many = Array.from({ length: 7 }, (_, i) => desk(`s${i}`, '/p', i))
   const [project] = groupProjects(many)
   expect(project?.sessionCount).toBe(7)
-  expect(project?.sessions.map(s => s.id)).toEqual(['s6', 's5', 's4', 's3', 's2'])
+  expect(project?.sessions.map(s => s.id)).toEqual(['s6', 's5', 's4', 's3', 's2', 's1', 's0'])
+})
+
+test('pageOf corta páginas de 5 e limita a página às que existem (F18)', async () => {
+  const rows = Array.from({ length: 12 }, (_, i) => i)
+  expect(pageOf(rows, 0)).toEqual({ rows: [0, 1, 2, 3, 4], page: 0, pages: 3, from: 0, to: 5 })
+  expect(pageOf(rows, 2)).toEqual({ rows: [10, 11], page: 2, pages: 3, from: 10, to: 12 })
+  expect(pageOf(rows, 9).page).toBe(2)
+  expect(pageOf(rows, -1).page).toBe(0)
+  expect(pageOf([], 0)).toEqual({ rows: [], page: 0, pages: 1, from: 0, to: 0 })
 })
 
 test('groupProjects ordena por F15: aguardando, rodando, mais recente', async () => {
