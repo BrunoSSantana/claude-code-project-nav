@@ -161,12 +161,13 @@ test('groupProjects ordena por F15: aguardando, rodando, mais recente', async ()
   expect(projects[1]?.runningCount).toBe(1)
 })
 
-test('paneSections: atual, fixados, todos os outros (F8)', async () => {
+test('paneSections: fixados no topo, depois atual e todos os outros (F8)', async () => {
   const projects = groupProjects([desk('a', '/a', 3), desk('b', '/b', 2), desk('c', '/c', 1)])
+  // o atual fica em "Projeto atual" mesmo fixado (F11)
   const sections = paneSections(projects, '/b', { '/c': true, '/b': true })
   expect(sections.map(s => [s.label, s.projects.map(p => p.name)])).toEqual([
-    ['Projeto atual', ['b']],
     ['Fixados', ['c']],
+    ['Projeto atual', ['b']],
     ['Todos os outros', ['a']],
   ])
   expect(paneSections(projects, '/fora', {}).map(s => s.label)).toEqual(['Todos os outros'])

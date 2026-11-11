@@ -169,7 +169,8 @@ export const groupProjects = (
   return sortProjects(rows)
 }
 
-// F8: projeto atual, fixados, todos os outros; cada seção já em F15.
+// F8: fixados no topo, depois o projeto atual e todos os outros; cada seção já em F15.
+// O atual fica na própria seção mesmo fixado (F11).
 // Com busca ou filtro ativo (F12), "Todos os outros" vira "Resultados".
 export const paneSections = (
   projects: readonly ProjectRow[],
@@ -180,8 +181,8 @@ export const paneSections = (
   const here = projects.filter(p => p.path === current)
   const others = projects.filter(p => p.path !== current)
   return [
-    { label: 'Projeto atual', projects: here },
     { label: 'Fixados', projects: others.filter(p => pins[p.path]) },
+    { label: 'Projeto atual', projects: here },
     { label: isFiltered ? 'Resultados' : 'Todos os outros', projects: others.filter(p => !pins[p.path]) },
   ].filter(section => section.projects.length > 0)
 }

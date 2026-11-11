@@ -5,6 +5,7 @@ import type { EventOf } from 'claude-code'
 import type { EngineInterface, RenderChildren } from 'claude-code'
 
 import { avatarColor, initials } from './model'
+import { svgDark } from './theme'
 
 type Elements = ReturnType<EngineInterface['ui']['resolve']>
 
@@ -80,32 +81,26 @@ export function Pressable(
   )
 }
 
-// Linha clicável inteira: um Button em branco de várias linhas numa camada por cima, mais
-// largo que a linha. A camada tem largura própria, para o Button não encolher (encolhido, o
-// Desktop corta com "…" visível); quem a corta é a linha, com `overflow="hidden"`.
-const ROW_CELLS = 200
-
-export function RowPress(elements: Elements, key: string, onPress: () => void, lines = 2) {
-  const { Box, Button } = elements
-  return (
-    <Box position="absolute" top={0} left={0} width={ROW_CELLS}>
-      <Button key={key} plain onPress={onPress}>
-        {Array.from({ length: lines }, () => BLANK.repeat(ROW_CELLS)).join('\n')}
-      </Button>
-    </Box>
-  )
-}
-
 // Pílula arredondada (o "Abrir" do protótipo): o Box não tem raio, então é um Svg.
-// Invertida (clara, texto escuro) é a do hover.
-const pillSvg = (text: string, width: number, isInverted: boolean) =>
-  [
+// Invertida (contraste máximo) é a do hover. Cores claras nos atributos, escuras em svgDark.
+const PILL = {
+  light: { bg: '#EAEAED', fg: '#3F3F46', invBg: '#1F1F24', invFg: '#FFFFFF' },
+  dark: { bg: '#2E2E36', fg: '#C9C9CF', invBg: '#ECECEE', invFg: '#141416' },
+} as const
+
+const pillSvg = (text: string, width: number, isInverted: boolean) => {
+  const pick = (c: { bg: string; fg: string; invBg: string; invFg: string }) => (isInverted ? { bg: c.invBg, fg: c.invFg } : { bg: c.bg, fg: c.fg })
+  const light = pick(PILL.light)
+  const dark = pick(PILL.dark)
+  return [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="20" viewBox="0 0 ${width} 20">`,
-    `<rect width="${width}" height="20" rx="10" fill="${isInverted ? '#ECECEE' : '#2E2E36'}"/>`,
-    `<text x="50%" y="50%" dy="0.35em" text-anchor="middle" font-family="Inter, system-ui, sans-serif"`,
-    ` font-size="11.5" font-weight="${isInverted ? 600 : 400}" fill="${isInverted ? '#141416' : '#C9C9CF'}">${text}</text>`,
+    svgDark(`.bg{fill:${dark.bg}}.fg{fill:${dark.fg}}`),
+    `<rect class="bg" width="${width}" height="20" rx="10" fill="${light.bg}"/>`,
+    `<text class="fg" x="50%" y="50%" dy="0.35em" text-anchor="middle" font-family="Inter, system-ui, sans-serif"`,
+    ` font-size="11.5" font-weight="${isInverted ? 600 : 400}" fill="${light.fg}">${text}</text>`,
     '</svg>',
   ].join('')
+}
 
 export function Pill(elements: Elements, text: string, isInverted = false) {
   const width = Math.round(text.length * 6.5 + 22)
@@ -117,18 +112,49 @@ export function Pill(elements: Elements, text: string, isInverted = false) {
   return <Text dimColor>{text}</Text>
 }
 
-// Botão de ícone: aqui o Button em branco fica no fluxo e define o tamanho e o destaque
-// do hover; o Svg vem por cima, centralizado nele. Com o Button por cima (Pressable),
-// o destaque saía mais largo que o ícone e deslocado para a direita.
+// "Abrir" clicável: a pílula desenhada e, por cima, um Button em branco recortado no tamanho
+// dela, então o destaque nativo do hover fica só sobre a pílula. O Button vai numa camada
+// mais larga que a pílula (encolhido, o Desktop corta com "…" visível) e quem o corta é a
+// caixa da pílula, com `overflow="hidden"`. No hover dela a pílula inverte (grupo `scope`).
+const PILL_CELLS = 30
+
+export function PillButton(elements: Elements, key: string, text: string, onPress: () => void, scope: string) {
+  const { Box, Button } = elements
+  if (!('Svg' in elements)) return <Button key={key} plain label={text} onPress={onPress} />
+  return (
+    <Box key={`${key}-wrap`} position="relative" hover={{ scope }}>
+      {Pill(elements, text)}
+      <Box position="absolute" top={0} left={0} display="none" hover={{ scope, display: 'flex' }}>
+        {Pill(elements, text, true)}
+      </Box>
+      <Box position="absolute" top={0} left={0} right={0} bottom={0} overflow="hidden">
+        <Box position="absolute" top={0} bottom={0} left={0} width={PILL_CELLS}>
+          <Button key={key} plain onPress={onPress}>
+            {BLANK.repeat(PILL_CELLS)}
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  )
+}
+
+// Botão de ícone: o Svg fica embaixo, centralizado numa caixa fixa (3 colunas, 1 linha), e um
+// Button em branco vem por cima, recortado por ela. O Desktop desenha o Svg inline: com ele
+// por cima, era o Svg que recebia o mouse, e o Button não acendia nem recebia o clique.
+// A camada do Button é mais larga que a caixa (encolhido, o Desktop corta com "…" visível).
+const ICON_CELLS = 10
+
 export function IconButton(elements: Elements, key: string, onPress: () => void, icon: RenderChildren) {
   const { Box, Button } = elements
   return (
-    <Box key={`${key}-wrap`} position="relative">
-      <Button key={key} plain onPress={onPress}>
-        {BLANK.repeat(2)}
-      </Button>
-      <Box position="absolute" top={0} left={0} right={0} bottom={0} alignItems="center" justifyContent="center">
-        {icon}
+    <Box key={`${key}-wrap`} position="relative" width={3} height={1} alignItems="center" justifyContent="center">
+      {icon}
+      <Box position="absolute" top={0} left={0} right={0} bottom={0} overflow="hidden">
+        <Box position="absolute" top={0} bottom={0} left={0} width={ICON_CELLS}>
+          <Button key={key} plain onPress={onPress}>
+            {BLANK.repeat(ICON_CELLS)}
+          </Button>
+        </Box>
       </Box>
     </Box>
   )
@@ -149,7 +175,8 @@ const pinSvg = (isPinned: boolean) => {
 // Grade 2×2 da faixa (F5): abre e fecha o painel. O glifo ▦ fica só no terminal.
 const GRID_SVG = [
   '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"',
-  ' stroke="#C9C9CF" stroke-width="2" stroke-linejoin="round">',
+  ' stroke="#52525B" stroke-width="2" stroke-linejoin="round">',
+  svgDark('svg{stroke:#C9C9CF}'),
   '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>',
   '<rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   '</svg>',
@@ -174,3 +201,80 @@ export function PinToggle(elements: Elements, surface: string, key: string, isPi
   const { Svg } = elements
   return IconButton(elements, key, onPress, <Svg source={pinSvg(isPinned)} alt={label} width={15} height={15} />)
 }
+
+// Pílula de filtro do protótipo (mod-a-painel-e-faixa.html, linha 111): raio total, borda de
+// 1px, ponto de status, rótulo e contagem mais apagada. O Box não tem raio: é um Svg, com o
+// Button em branco por cima recortado por ela. Ativa: contraste máximo, como a "Todos 19".
+// Cores claras nos atributos, escuras em svgDark (o Svg não lê as variáveis do tema).
+const FILTER = {
+  light: { line: '#D4D4D8', fg: '#3F3F46', onBg: '#1F1F24', onFg: '#FFFFFF', dot: '#71717A' },
+  dark: { line: '#3A3A42', fg: '#C9C9CF', onBg: '#ECECEE', onFg: '#141416', dot: '#8B8B93' },
+} as const
+const FILTER_HEIGHT = 24
+// largura média de um caractere do Inter a 12px
+const charWidth = (text: string) => text.length * 7
+
+const escapeXml = (text: string) => text.replace(/[<>&"]/g, c => `&#${c.charCodeAt(0)};`)
+
+// `dot` undefined: o ponto neutro do "Todos", que na pílula ativa vira a cor do texto
+export const filterPillSvg = (label: string, count: number, dot: string | undefined, isOn: boolean) => {
+  const h = FILTER_HEIGHT
+  const pad = 11
+  const dotSize = 7
+  const textX = pad + dotSize + 6
+  const countText = String(count)
+  const width = Math.round(textX + charWidth(label) + 5 + charWidth(countText) + pad)
+  const { light, dark } = FILTER
+  const pick = (c: (typeof FILTER)['light' | 'dark']) =>
+    isOn ? { bg: c.onBg, line: c.onBg, fg: c.onFg, dot: dot ?? c.onFg } : { bg: 'none', line: c.line, fg: c.fg, dot: dot ?? c.dot }
+  const l = pick(light)
+  const d = pick(dark)
+  const svg = [
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${h}" viewBox="0 0 ${width} ${h}">`,
+    svgDark(`.bg{fill:${d.bg};stroke:${d.line}}.fg{fill:${d.fg}}.dot{fill:${d.dot}}`),
+    `<rect class="bg" x="0.5" y="0.5" width="${width - 1}" height="${h - 1}" rx="${(h - 1) / 2}" fill="${l.bg}" stroke="${l.line}"/>`,
+    `<circle class="dot" cx="${pad + dotSize / 2}" cy="${h / 2}" r="${dotSize / 2}" fill="${l.dot}"/>`,
+    `<text class="fg" x="${textX}" y="50%" dy="0.35em" font-family="Inter, system-ui, sans-serif" font-size="12"`,
+    ` font-weight="500" fill="${l.fg}">${escapeXml(label)}<tspan dx="5" fill-opacity="0.75">${countText}</tspan></text>`,
+    '</svg>',
+  ].join('')
+  return { svg, width, height: h }
+}
+
+const FILTER_CELLS = 30
+
+export function FilterPill(
+  elements: Elements,
+  key: string,
+  label: string,
+  count: number,
+  dot: string | undefined,
+  isOn: boolean,
+  onPress: () => void,
+) {
+  const { Box, Button } = elements
+  if (!('Svg' in elements)) return <Button key={key} plain label={`${label} ${count}`} onPress={onPress} />
+  const { Svg } = elements
+  const pill = filterPillSvg(label, count, dot, isOn)
+  return (
+    <Box key={`${key}-wrap`} position="relative">
+      <Svg source={pill.svg} alt={`${label} ${count}`} width={pill.width} height={pill.height} />
+      <Box position="absolute" top={0} left={0} right={0} bottom={0} overflow="hidden">
+        <Box position="absolute" top={0} bottom={0} left={0} width={FILTER_CELLS}>
+          <Button key={key} plain onPress={onPress}>
+            {BLANK.repeat(FILTER_CELLS)}
+          </Button>
+        </Box>
+      </Box>
+    </Box>
+  )
+}
+
+// Lupa do campo de busca do protótipo (linha 105).
+export const SEARCH_SVG = [
+  '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"',
+  ' stroke="#71717A" stroke-width="2.2" stroke-linecap="round">',
+  svgDark('svg{stroke:#8B8B93}'),
+  '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  '</svg>',
+].join('')

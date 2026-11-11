@@ -6,6 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-11
+
+### Changed
+
+- Pinned projects now sit at the top of the projects pane, above the current project, so pinning visibly moves a project up. The current project stays in its own section even when pinned.
+
+### Fixed
+
+- Pane and band colors now follow Claude's light and dark themes: the open project, filter pills, counters, alert and borders no longer stay dark in the light theme.
+- In the projects pane, the hover highlight of a session stays on its "Open" button instead of a strip across the row; the row shows its border on hover.
+- The pin button in the projects pane and the ▦ button in the band respond to hover and clicks again on Desktop.
+- Status filters in the projects pane are rounded pills with a border, as in the design, and the dot of the active "All" filter no longer disappears into its background.
+- The pane search field has a search icon beside it, and the project total moved to the pane's title on Desktop.
+
 ## [0.4.0] - 2026-11-06
 
 First public release. Versions before 0.4.0 were development milestones (phases 0 to 3 of [the spec](https://github.com/BrunoSSantana/claude-code-project-nav/blob/main/docs/SPEC.md)) and were not published.
@@ -22,5 +36,6 @@ First public release. Versions before 0.4.0 were development milestones (phases 
 - `/p <term>` autocomplete for projects and sessions (F16).
 - Desktop deep links to open sessions, with a copy-to-clipboard fallback in the terminal.
 
-[Unreleased]: https://github.com/BrunoSSantana/claude-code-project-nav/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/BrunoSSantana/claude-code-project-nav/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/BrunoSSantana/claude-code-project-nav/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/BrunoSSantana/claude-code-project-nav/releases/tag/v0.4.0

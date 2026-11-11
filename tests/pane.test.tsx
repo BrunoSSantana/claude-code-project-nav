@@ -1,5 +1,7 @@
 import { expect, test } from 'claude-code/testing'
 
+import { filterPillSvg } from '../src/avatar'
+import { paneTitle } from '../src/pane'
 import type { Here, ProjectRow, Projects } from '../types'
 
 const HERE: Here = { id: 'cli-1', root: '/w/project-mods', name: 'project-mods', title: 'Painel', branch: undefined }
@@ -73,7 +75,10 @@ test('o painel lista os projetos por seção, com o atual aberto (F8 a F10)', as
   on('state.get', seed({ pins: { '/w/job': true } }))
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
-    expect(await ui.find({ type: 'Text', text: /3 projetos no total/ })).toBeTruthy()
+    // o total fica no título do painel no Desktop (paneTitle) e no corpo no terminal
+    const total = await ui.find({ type: 'Text', text: /3 projetos no total/ })
+    if (surface === 'desktop') expect(total).toBeFalsy()
+    else expect(total).toBeTruthy()
     expect(await ui.find({ type: 'Text', text: /PROJETO ATUAL/ })).toBeTruthy()
     expect(await ui.find({ type: 'Text', text: /FIXADOS/ })).toBeTruthy()
     expect(await ui.find({ type: 'Text', text: /TODOS OS OUTROS/ })).toBeTruthy()
@@ -85,7 +90,7 @@ test('o painel lista os projetos por seção, com o atual aberto (F8 a F10)', as
     expect(await ui.find({ type: 'Text', text: /esta sessão/ })).toBeTruthy()
     expect(await ui.find({ type: 'Button', key: 'go-cli-2' })).toBeTruthy()
     expect(await ui.find({ type: 'Button', key: 'go-cli-1' })).toBeFalsy()
-    // no Desktop um só Button em branco, de duas linhas, cobre a caixa inteira (o "Abrir" é desenho)
+    // no Desktop um só Button em branco, recortado sobre a pílula "Abrir" (que é desenho)
     if (surface === 'desktop') {
       expect(await ui.find({ type: 'Button', key: 'go-cli-2-1' })).toBeFalsy()
       expect(await ui.find({ type: 'Button', key: 'open-cli-2' })).toBeFalsy()
@@ -109,11 +114,11 @@ test('filtros mostram contagens e combinam com a busca (F12, F13)', async ($, on
   on('state.get', seed({ filter: 'waiting' }))
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({ ...PANE, surface })
-    // terminal: o rótulo do Button; Desktop: a pílula desenhada por baixo do Button em branco
+    // terminal: o rótulo do Button; Desktop: a pílula em Svg (o alt diz rótulo e contagem)
     if (surface === 'desktop') {
       expect(await ui.find({ type: 'Button', key: 'filter-all' })).toBeTruthy()
-      expect(await ui.find({ type: 'Text', text: /^Aguardando$/ })).toBeTruthy()
-      expect(await ui.find({ type: 'Text', text: /^Parados$/ })).toBeTruthy()
+      const pills = JSON.stringify(await ui.findAll({ type: 'Svg' }))
+      for (const alt of ['Todos 3', 'Aguardando 1', 'Rodando 0', 'Parados 2']) expect(pills).toContain(alt)
     } else {
       expect(await ui.find({ type: 'Button', text: /^Todos 3$/ })).toBeTruthy()
       expect(await ui.find({ type: 'Button', text: /^Aguardando 1$/ })).toBeTruthy()
@@ -161,4 +166,53 @@ test('no Desktop o Button sobreposto não desenha texto visível', async ($, on)
     expect(button).not.toMatch(/Todos|Job|Abrir|Fixar/)
   }
   await ui.unmount()
+})
+
+test('fixar pelo alfinete move o projeto para Fixados na hora (F11)', async ($, on) => {
+  // só o que vem do scan é semeado: pins passa pelo $.state de verdade
+  on('state.get', ($, e, next) =>
+    e.key === 'here'
+      ? { value: { value: { shape: 'here-1', value: HERE }, version: 1 } }
+      : e.key === 'projects'
+        ? { value: { value: { shape: 'projects-1', value: PROJECTS }, version: 1 } }
+        : next(e),
+  )
+  const writes: string[] = []
+  on('env.get', () => ({ value: '/home/a' }))
+  on('fs.write', (_, e) => {
+    writes.push(e.path)
+    return { value: undefined }
+  })
+  for (const surface of ['terminal', 'desktop'] as const) {
+    const ui = await $.ui.mount({ ...PANE, surface })
+    expect(await ui.find({ type: 'Text', text: /FIXADOS/ })).toBeFalsy()
+    await ui.press({ key: 'pin-/w/job' })
+    expect(await ui.find({ type: 'Text', text: /FIXADOS/ })).toBeTruthy()
+    // fixados vão para o topo do painel, acima do projeto atual (F8)
+    const order = (await ui.findAll({ type: 'Button' })).map(b => b.key).filter(k => k?.startsWith('pin-'))
+    expect(order[0]).toBe('pin-/w/job')
+    expect(order.indexOf('pin-/w/job')).toBeLessThan(order.indexOf('pin-/w/project-mods'))
+    await ui.press({ key: 'pin-/w/job' })
+    expect(await ui.find({ type: 'Text', text: /FIXADOS/ })).toBeFalsy()
+    await ui.unmount()
+  }
+  expect(writes).toContain('/home/a/.claude/project-nav/pins.json')
+})
+
+test('o título do painel leva o total de projetos, como o cabeçalho do protótipo', async () => {
+  expect(paneTitle(19)).toBe('Projetos · 19 no total')
+  expect(paneTitle(0)).toBe('Projetos')
+  expect(paneTitle(undefined)).toBe('Projetos')
+})
+
+test('a pílula de filtro é arredondada, com borda, e a ativa inverte as cores', async () => {
+  const off = filterPillSvg('Aguardando', 0, '#E8915F', false)
+  const on = filterPillSvg('Todos', 19, undefined, true)
+  expect(off.svg).toContain(`rx="${(off.height - 1) / 2}"`)
+  expect(off.svg).toContain('fill="none" stroke="#D4D4D8"')
+  expect(off.svg).toContain('fill="#E8915F"')
+  // na ativa o ponto neutro do "Todos" vira a cor do texto e não some no fundo
+  expect(on.svg).toContain('fill="#1F1F24" stroke="#1F1F24"')
+  expect(on.svg).toMatch(/<circle[^>]*fill="#FFFFFF"/)
+  expect(on.width).toBeGreaterThan(off.width - 30)
 })

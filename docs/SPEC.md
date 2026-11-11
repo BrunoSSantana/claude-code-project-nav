@@ -42,7 +42,7 @@ Visual rules for everything:
 - **Status colors**: orange `#E8915F` for waiting on you, blue `#7AB0FF` for running, grey `#5C5C64` for idle. Orange and blue because they stay distinguishable for people with color blindness.
 - **Project avatar**: a square with the name's two initials and a background color derived from the project path, always the same for the same project.
 - **Allowed elements**: only `Box`, `Text`, `Button`, `Input`, `Select` and `Svg`, all drawn by the host surface. No free-form HTML unless phase 0 approves the `Client` element.
-- **As implemented**: the avatar is an `Svg` (rounded square with initials) on Desktop and a `Text` with background in the terminal; counters and branch are `Box`es with a background; session title, filters, "Open" and ▦ are bordered `Button`s (`variant`). `Button` only takes text, so the pin is a glyph (★/☆) and status dots sit outside it.
+- **As implemented**: the avatar is an `Svg` (rounded square with initials) on Desktop and a `Text` with background in the terminal; counters and branch are `Box`es with a background; the status filters and "Open" are rounded pills drawn as `Svg` (a `Box` has no border radius) with a blank `Button` layered on top for the click; the project total goes in the pane title on Desktop. `Button` only takes text, so the pin is a glyph (★/☆) and status dots sit outside it.
 
 ## Functional requirements
 
@@ -60,7 +60,7 @@ Each requirement has a code that phases and tests refer to.
 ### Projects pane
 
 - **F7 · Open and close**: `/p` and the band button. The pane remembers whether it was open across sessions.
-- **F8 · Sections**: "Current project" on top, then "Pinned", then "All others". Header with the project total.
+- **F8 · Sections**: "Pinned" on top, then "Current project", then "All others". Header with the project total. (Until 0.4.0 "Current project" came first; pinned moved to the top in 0.4.1 so that pinning visibly lifts a project.)
 - **F9 · Project row**: avatar, name, a status line ("Waiting for your permission", "1 session running" or "Last activity <date>") and the pin button. Clicking the row expands that project's sessions.
 - **F10 · Project sessions**: up to 5 most recent, with status dot, title and last activity. The open session shows "this session"; clicking any other opens it.
 - **F11 · Pin**: the pin toggles. Pins are saved for every session on the machine. The current project always shows under "Current project", even when pinned.

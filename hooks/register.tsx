@@ -5,7 +5,7 @@ import { renderBand } from '../src/band'
 import { currentBranch, homeDir, readCliSessions, readDesktopSessions, readProjects } from '../src/index'
 import { readLive, readShared, removeLive, writeLive } from '../src/live'
 import { autocompleteFor, mergeSessions, PANE, pickTitle, projectName } from '../src/model'
-import { openPane, rememberPane, renderPane, togglePane, wasPaneOpen } from '../src/pane'
+import { openPane, rememberPane, renderPane, retitlePane, togglePane, wasPaneOpen } from '../src/pane'
 import { isFresh, reasonFor, withLiveStatus } from '../src/status'
 import type { Status } from '../types'
 
@@ -74,6 +74,7 @@ async function refresh($: EngineInterface) {
   await update($, sessions, () => rows)
   await update($, projects, () => list)
   await update($, pins, () => pinned)
+  await retitlePane($, list.list.length)
   await update($, here, () => ({
     id,
     root,
