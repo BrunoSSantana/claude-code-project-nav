@@ -81,17 +81,21 @@ export function Pressable(
   )
 }
 
-// Linha clicável inteira: um Button em branco de várias linhas numa camada por cima, mais
-// largo que a linha. A camada tem largura própria, para o Button não encolher (encolhido, o
-// Desktop corta com "…" visível); quem a corta é a linha, com `overflow="hidden"`.
+// Linha clicável inteira: um Button em branco numa camada por cima, mais largo que a linha.
+// O Button do Desktop não quebra linha (`white-space: nowrap`), então texto de várias linhas
+// não o deixa mais alto: quem dá a altura é a camada, presa ao topo e à base da linha
+// (`top` e `bottom`), e o Button, filho de um flex em linha, estica até ela. Assim o destaque
+// do hover cobre a caixa toda, não só uma faixa no topo. A camada tem largura própria, para
+// o Button não encolher (encolhido, o Desktop corta com "…" visível); quem a corta é a
+// linha, com `overflow="hidden"`.
 const ROW_CELLS = 200
 
-export function RowPress(elements: Elements, key: string, onPress: () => void, lines = 2) {
+export function RowPress(elements: Elements, key: string, onPress: () => void) {
   const { Box, Button } = elements
   return (
-    <Box position="absolute" top={0} left={0} width={ROW_CELLS}>
+    <Box position="absolute" top={0} bottom={0} left={0} width={ROW_CELLS}>
       <Button key={key} plain onPress={onPress}>
-        {Array.from({ length: lines }, () => BLANK.repeat(ROW_CELLS)).join('\n')}
+        {BLANK.repeat(ROW_CELLS)}
       </Button>
     </Box>
   )

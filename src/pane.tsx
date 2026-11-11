@@ -180,7 +180,7 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
               }
               // F10, Desktop: a sessão é uma caixa; no hover a borda arredondada aparece e o
               // "Abrir" inverte (um grupo, `scope`, liga os dois). O clique é um Button em branco
-              // de duas linhas, mais largo que a caixa e cortado por ela: o destaque nativo dele,
+              // da altura da caixa (RowPress), mais largo e cortado por ela: o destaque nativo dele,
               // que o Desktop desenha de todo jeito, vira o fundo da caixa inteira no hover.
               // A aberta aqui não tem clique nem hover.
               const scope = `s-${session.id}`
