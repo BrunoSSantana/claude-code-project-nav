@@ -32,7 +32,7 @@ When you run several Claude Code sessions in parallel, the Desktop sidebar mixes
 - **Context band above the prompt** — project avatar and name, session title and git branch. Click the title to list the project's sessions and jump to one, or start a new session.
 - **Cross-session status** — live "N waiting" / "N running" counters for your other sessions.
 - **Alerts** — when another session asks for a permission or a question, the band shows the project, the session and the reason (e.g. `Bash: npm run build`), with **Go to session** and **Later**.
-- **Projects pane** (`/p` or ▦) — the same projects as the Desktop sidebar, grouped into *Pinned* (on top), *Current project* and *All others*, with status, up to 5 sessions each, search, status filters and pins.
+- **Projects pane** (`/p` or ▦) — the same projects as the Desktop sidebar, grouped into *Pinned* (on top), *Current project* and *All others*, with status, every session paged 5 at a time, "+ New session" per project, search, status filters and pins.
 - **Prompt search** — `/p <term>` suggests projects and sessions as you type and opens the pane already filtered.
 - **Works on Desktop and in the terminal** — avatars are `Svg` on Desktop and styled text in the terminal; opening a session uses a Desktop deep link, or copies `cd <folder> && claude --resume <id>` where no deep link exists.
 

@@ -32,7 +32,7 @@ O `project-nav` é um **mod do Claude Code** (um plugin de hooks em TypeScript q
 - **Faixa acima do prompt**: avatar e nome do projeto, título da sessão e branch. Clicar no título lista as sessões do projeto para trocar de sessão ou abrir uma nova.
 - **Status entre sessões**: contadores "N aguardando" e "N rodando" das outras sessões, ao vivo.
 - **Alertas**: quando outra sessão pede permissão ou faz uma pergunta, a faixa mostra o projeto, a sessão e o motivo (por exemplo `Bash: npm run build`), com **Ir para a sessão** e **Depois**.
-- **Painel de projetos** (`/p` ou ▦): os mesmos projetos da barra lateral do Desktop, em *Fixados* (no topo), *Projeto atual* e *Todos os outros*, com status, até 5 sessões por projeto, busca, filtros por status e alfinete para fixar.
+- **Painel de projetos** (`/p` ou ▦): os mesmos projetos da barra lateral do Desktop, em *Fixados* (no topo), *Projeto atual* e *Todos os outros*, com status, todas as sessões em páginas de 5, "+ Nova sessão" por projeto, busca, filtros por status e alfinete para fixar.
 - **Busca pelo prompt**: `/p <termo>` sugere projetos e sessões enquanto você digita e abre o painel já filtrado.
 - **Desktop e terminal**: avatar em `Svg` no Desktop e texto com fundo no terminal. Abrir uma sessão usa o deep link do Desktop ou, onde ele não existe, copia `cd <pasta> && claude --resume <id>`.
 

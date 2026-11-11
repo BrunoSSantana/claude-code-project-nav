@@ -6,6 +6,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Added
+
+- "+ New session" in each expanded project of the projects pane, starting a session in that project's folder (F17).
+- Session pages in the projects pane: projects with more than 5 sessions page through all of them with ‹ and › (F18). `/p <term>` now also suggests sessions beyond the first 5.
+
+### Removed
+
+- The "+ N in the Desktop sidebar" note under a project, replaced by the pages.
+
 ## [0.4.1] - 2026-11-11
 
 ### Changed

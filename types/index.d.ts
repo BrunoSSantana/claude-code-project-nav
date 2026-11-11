@@ -30,7 +30,7 @@ export type ProjectRow = {
   lastActivity: number
   sessionCount: number
   runningCount: number
-  // as mais recentes, já na ordem F15, até 5 (F10)
+  // todas, já na ordem F15; o painel pagina (F10, F18)
   sessions: SessionRow[]
 }
 
@@ -65,6 +65,8 @@ declare module 'claude-code' {
       projects: Shaped<Projects | null>
       // projetos abertos ou fechados no painel; ausente, só o atual fica aberto
       expanded: Record<string, boolean>
+      // página de sessões aberta em cada projeto (F18); ausente, a primeira
+      sessionPage: Record<string, number>
       // espelho de nav:pins no $.store
       pins: Record<string, boolean>
       // as outras sessões com o mod, lidas a cada 5 s (F2, F6)

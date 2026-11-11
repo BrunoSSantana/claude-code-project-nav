@@ -12,19 +12,21 @@ import { Avatar, FilterPill, PillButton, PinToggle, Pressable, SEARCH_SVG } from
 import {
   filterProjects,
   PANE,
+  pageOf,
   paneSections,
   projectStatusLine,
   relativeTime,
   STATUS_COLOR,
   statusCounts,
 } from './model'
-import { openSession } from './open'
+import { newSession, openSession } from './open'
 import { THEME } from './theme'
 
 // O scan do engine só lê atoms declarados no próprio arquivo: cada um repete os seus.
 const here = atom({ plugin: 'project-nav', key: 'here' } as const, null, { shape: 'here-1' })
 const projects = atom({ plugin: 'project-nav', key: 'projects' } as const, null, { shape: 'projects-1' })
 const expanded = atom({ plugin: 'project-nav', key: 'expanded' } as const, {})
+const sessionPage = atom({ plugin: 'project-nav', key: 'sessionPage' } as const, {})
 const pins = atom({ plugin: 'project-nav', key: 'pins' } as const, {})
 const query = atom({ plugin: 'project-nav', key: 'query' } as const, '')
 const filter = atom({ plugin: 'project-nav', key: 'filter' } as const, 'all')
@@ -95,9 +97,10 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
   const view = await read($, projects)
   if (!view) return <Text dimColor>Lendo os projetos do Desktop…</Text>
 
-  const [current, open, pinned, term, status] = await Promise.all([
+  const [current, open, pages, pinned, term, status] = await Promise.all([
     read($, here),
     read($, expanded),
+    read($, sessionPage),
     read($, pins),
     read($, query),
     read($, filter),
@@ -125,6 +128,9 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
     const toggle = () => update($, expanded, all => ({ ...all, [project.path]: !isOpen }))
     const subColor = project.status === 'idle' ? undefined : SUB_COLOR[project.status]
     const statusLine = projectStatusLine(project, now)
+    // F18: as sessões em páginas de PANE_SESSIONS
+    const page = pageOf(project.sessions, pages[project.path] ?? 0)
+    const turn = (to: number) => update($, sessionPage, all => ({ ...all, [project.path]: to }))
     // cor e negrito só fora do Button: o Desktop desenha o rótulo do Button sem os estilos dos filhos
     return (
       <Box
@@ -168,7 +174,7 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
         </Box>
         {isOpen && (
           <Box flexDirection="column" paddingLeft={isDesktop ? 3 : 4}>
-            {project.sessions.map(session => {
+            {page.rows.map(session => {
               const isHere = session.id === current?.id
               const when = isHere ? 'aberta aqui' : relativeTime(session.lastActivity, now)
               const go = () => openSession($, e.surface, session, project.path)
@@ -232,11 +238,30 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
             })}
           </Box>
         )}
-        {isOpen && project.sessionCount > project.sessions.length && (
-          <Box paddingLeft={isDesktop ? 5 : 4}>
-            <Text dimColor size="caption">
-              {`+ ${project.sessionCount - project.sessions.length} na barra lateral do Desktop`}
-            </Text>
+        {isOpen && (
+          // F17 e F18: nova sessão neste projeto e, com mais de uma página, o paginador
+          <Box paddingLeft={4} paddingTop={isDesktop ? 1 : 0} gap={1} alignItems="center">
+            <Box flexGrow={1}>
+              {/* PillButton já cai no Button de texto onde não há Svg */}
+              {PillButton(elements, `new-${project.path}`, '+ Nova sessão', () => newSession($, e.surface, project.path), `new-${project.path}`)}
+            </Box>
+            {page.pages > 1 && (
+              <Box gap={1} alignItems="center">
+                {page.page > 0 ? (
+                  <Button key={`prev-${project.path}`} plain dimColor label="‹" onPress={() => turn(page.page - 1)} />
+                ) : (
+                  <Text dimColor>{' '}</Text>
+                )}
+                <Text dimColor size="caption">
+                  {`${page.from + 1}–${page.to} de ${project.sessions.length}`}
+                </Text>
+                {page.page < page.pages - 1 ? (
+                  <Button key={`next-${project.path}`} plain dimColor label="›" onPress={() => turn(page.page + 1)} />
+                ) : (
+                  <Text dimColor>{' '}</Text>
+                )}
+              </Box>
+            )}
           </Box>
         )}
       </Box>
