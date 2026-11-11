@@ -249,6 +249,7 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
           título com um painel só, então lá ele fica no corpo */}
       {!isDesktop && <Text dimColor size="caption">{`${view.list.length} projetos no total`}</Text>}
       {Input && (
+        // o Desktop desenha o Input com largura própria: nem flexGrow nem stretch o esticam
         <Box width="100%" alignItems="center" gap={1}>
           {'Svg' in elements && isDesktop && <elements.Svg source={SEARCH_SVG} alt="Buscar" width={14} height={14} />}
           <Box flexGrow={1} flexDirection="column">

@@ -18,7 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - In the projects pane, the hover highlight of a session stays on its "Open" button instead of a strip across the row; the row shows its border on hover.
 - The pin button in the projects pane and the ▦ button in the band respond to hover and clicks again on Desktop.
 - Status filters in the projects pane are rounded pills with a border, as in the design, and the dot of the active "All" filter no longer disappears into its background.
-- The pane search field spans the pane's width, with a search icon beside it, and the project total moved to the pane's title on Desktop.
+- The pane search field has a search icon beside it, and the project total moved to the pane's title on Desktop.
 
 ## [0.4.0] - 2026-11-06
 
