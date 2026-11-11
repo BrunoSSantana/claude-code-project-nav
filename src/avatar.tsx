@@ -138,18 +138,23 @@ export function PillButton(elements: Elements, key: string, text: string, onPres
   )
 }
 
-// Botão de ícone: aqui o Button em branco fica no fluxo e define o tamanho e o destaque
-// do hover; o Svg vem por cima, centralizado nele. Com o Button por cima (Pressable),
-// o destaque saía mais largo que o ícone e deslocado para a direita.
+// Botão de ícone: o Svg fica embaixo, centralizado numa caixa fixa (3 colunas, 1 linha), e um
+// Button em branco vem por cima, recortado por ela. O Desktop desenha o Svg inline: com ele
+// por cima, era o Svg que recebia o mouse, e o Button não acendia nem recebia o clique.
+// A camada do Button é mais larga que a caixa (encolhido, o Desktop corta com "…" visível).
+const ICON_CELLS = 10
+
 export function IconButton(elements: Elements, key: string, onPress: () => void, icon: RenderChildren) {
   const { Box, Button } = elements
   return (
-    <Box key={`${key}-wrap`} position="relative">
-      <Button key={key} plain onPress={onPress}>
-        {BLANK.repeat(2)}
-      </Button>
-      <Box position="absolute" top={0} left={0} right={0} bottom={0} alignItems="center" justifyContent="center">
-        {icon}
+    <Box key={`${key}-wrap`} position="relative" width={3} height={1} alignItems="center" justifyContent="center">
+      {icon}
+      <Box position="absolute" top={0} left={0} right={0} bottom={0} overflow="hidden">
+        <Box position="absolute" top={0} bottom={0} left={0} width={ICON_CELLS}>
+          <Button key={key} plain onPress={onPress}>
+            {BLANK.repeat(ICON_CELLS)}
+          </Button>
+        </Box>
       </Box>
     </Box>
   )
