@@ -1,6 +1,6 @@
 {
   "name": "project-nav",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Project and session navigation for Claude Code: a context band above the prompt, cross-session status alerts and a projects pane",
   "author": { "name": "Bruno Santana", "email": "61945340+BrunoSSantana@users.noreply.github.com", "url": "https://github.com/BrunoSSantana" },
   "homepage": "https://github.com/BrunoSSantana/claude-code-project-nav",
