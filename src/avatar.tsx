@@ -57,30 +57,6 @@ export type RenderEvent = EventOf['ui.render']
 // No terminal, onde o Button pinta as próprias células, fica o Button de texto comum.
 const BLANK = '⠀'
 
-export function Pressable(
-  elements: Elements,
-  surface: string,
-  key: string,
-  label: string,
-  onPress: () => void,
-  content: RenderChildren,
-  cells: number,
-  fallback?: RenderChildren,
-) {
-  const { Box, Button } = elements
-  if (surface !== 'desktop') return fallback ?? <Button key={key} plain label={label} onPress={onPress} />
-  return (
-    <Box key={`${key}-wrap`} position="relative">
-      {content}
-      <Box position="absolute" top={0} left={0}>
-        <Button key={key} plain onPress={onPress}>
-          {BLANK.repeat(Math.max(1, cells))}
-        </Button>
-      </Box>
-    </Box>
-  )
-}
-
 // Pílula arredondada (o "Abrir" do protótipo): o Box não tem raio, então é um Svg.
 // Invertida (contraste máximo) é a do hover. Cores claras nos atributos, escuras em svgDark.
 const PILL = {

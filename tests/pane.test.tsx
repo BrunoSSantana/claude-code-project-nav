@@ -82,9 +82,9 @@ test('o painel lista os projetos por seção, com o atual aberto (F8 a F10)', as
     expect(await ui.find({ type: 'Text', text: /PROJETO ATUAL/ })).toBeTruthy()
     expect(await ui.find({ type: 'Text', text: /FIXADOS/ })).toBeTruthy()
     expect(await ui.find({ type: 'Text', text: /TODOS OS OUTROS/ })).toBeTruthy()
-    // no Desktop o nome é Text em negrito com o clique por cima; no terminal, o próprio Button
+    // no Desktop o nome é Text em negrito e o chevron expande; no terminal, o nome é o Button
     expect(await ui.find({ type: surface === 'desktop' ? 'Text' : 'Button', text: /^Storefront$/ })).toBeTruthy()
-    expect(await ui.find({ type: 'Button', key: 'name-/w/work/checkout-web' })).toBeTruthy()
+    expect(await ui.find({ type: 'Button', key: 'chev-/w/work/checkout-web' })).toBeTruthy()
     expect(await ui.find({ type: 'Text', text: /Aguardando sua permissão/ })).toBeTruthy()
     // projeto atual aberto: esta sessão sem clique, a outra clicável
     expect(await ui.find({ type: 'Text', text: /esta sessão/ })).toBeTruthy()
@@ -101,6 +101,8 @@ test('o painel lista os projetos por seção, com o atual aberto (F8 a F10)', as
     // os outros ficam fechados
     expect(await ui.find({ type: 'Button', key: 'go-Job-1' })).toBeFalsy()
     expect(await ui.find({ type: 'Button', key: 'chev-/w/job' })).toBeTruthy()
+    // no Desktop só o chevron expande: o nome não tem Button por cima
+    if (surface === 'desktop') expect(await ui.find({ type: 'Button', key: 'name-/w/job' })).toBeFalsy()
     await ui.unmount()
   }
 })
@@ -158,8 +160,8 @@ test('filtros mostram contagens e combinam com a busca (F12, F13)', async ($, on
     }
     // filtro ativo: só Storefront, em "Resultados"
     expect(await ui.find({ type: 'Text', text: /RESULTADOS/ })).toBeTruthy()
-    expect(await ui.find({ type: 'Button', key: 'name-/w/work/checkout-web' })).toBeTruthy()
-    expect(await ui.find({ type: 'Button', key: 'name-/w/job' })).toBeFalsy()
+    expect(await ui.find({ type: 'Button', key: 'chev-/w/work/checkout-web' })).toBeTruthy()
+    expect(await ui.find({ type: 'Button', key: 'chev-/w/job' })).toBeFalsy()
     await ui.unmount()
   }
 })
@@ -193,7 +195,7 @@ test('o alfinete mostra quem está fixado (F11)', async ($, on) => {
 test('no Desktop o Button sobreposto não desenha texto visível', async ($, on) => {
   on('state.get', seed({}))
   const ui = await $.ui.mount({ ...PANE, surface: 'desktop' })
-  for (const key of ['filter-all', 'name-/w/job', 'go-cli-2', 'pin-/w/job']) {
+  for (const key of ['filter-all', 'chev-/w/job', 'go-cli-2', 'pin-/w/job']) {
     const button = JSON.stringify(await ui.find({ type: 'Button', key }))
     expect(button).not.toMatch(/Todos|Job|Abrir|Fixar/)
   }
