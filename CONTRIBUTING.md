@@ -50,7 +50,8 @@ tsc -p . --noEmit
   - a function in another file that receives `$` must be a `function` declaration, not an arrow function;
   - each file declares its own `atom`s;
   - a `ui.render` matcher's `requestId` must be a literal;
-  - render hooks cannot write state: do writes in event hooks.
+  - render hooks cannot write state: do writes in event hooks;
+  - no JSX Fragment (`<>`) inside a row: Desktop draws it as a box of its own and the row turns into a column.
 - **New `$.state` values** must be declared in `types/index.d.ts`; `claude plugin validate` holds the module to that contract.
 - **Read defensively.** The Desktop registry and `.jsonl` transcripts are undocumented formats: a missing field must degrade (folder name, "untitled session"), never throw.
 - **No real data in tests or docs.** Use fictional paths and project names (`/home/a/dev/api-payments`, `acme/webapp`).

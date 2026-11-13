@@ -8,7 +8,7 @@ import type { EngineInterface, EventOf } from 'claude-code'
 import type { ProjectRow, StatusFilter } from '../types'
 import { homeDir } from './index'
 import { writeShared } from './live'
-import { Avatar, FilterPill, PillButton, PinToggle, Pressable, SEARCH_SVG } from './avatar'
+import { Avatar, FilterPill, IconButton, PillButton, PinToggle, SEARCH_SVG } from './avatar'
 import {
   filterProjects,
   PANE,
@@ -141,35 +141,29 @@ export async function renderPane($: EngineInterface, e: EventOf['ui.render']) {
         paddingY={isOpen ? 1 : 0}
       >
         <Box gap={1} alignItems="center">
+          {/* F9: no Desktop quem expande é o chevron. O destaque nativo do Button tem uma linha
+              de altura: sobre o nome e o status (duas linhas) ele cortava a linha ao meio */}
+          {/* sem Fragment: o Desktop o desenha como uma caixa própria e a linha vira coluna */}
           {Avatar(elements, project.name, project.path, 30)}
           <Box flexDirection="column" flexGrow={1} flexShrink={1}>
-            {/* F9: clicar na linha expande; no Desktop o nome fica em negrito com o clique por cima */}
-            {Pressable(
-              elements,
-              e.surface,
-              `name-${project.path}`,
-              project.name,
-              toggle,
-              <Box flexDirection="column">
-                <Text bold wrap="truncate-end" size="footnote">
-                  {project.name}
-                </Text>
-                <Text color={subColor} dimColor={!subColor} wrap="truncate-end" size="caption">
-                  {statusLine}
-                </Text>
-              </Box>,
-              Math.max(project.name.length, statusLine.length),
-              <Box flexDirection="column">
-                <Button key={`name-${project.path}`} plain onPress={toggle}>
-                  {project.name}
-                </Button>
-                <Text color={subColor} dimColor={!subColor} wrap="truncate-end">
-                  {statusLine}
-                </Text>
-              </Box>,
+            {isDesktop ? (
+              <Text bold wrap="truncate-end" size="footnote">
+                {project.name}
+              </Text>
+            ) : (
+              <Button key={`name-${project.path}`} plain onPress={toggle}>
+                {project.name}
+              </Button>
             )}
+            <Text color={subColor} dimColor={!subColor} wrap="truncate-end" size={isDesktop ? 'caption' : undefined}>
+              {statusLine}
+            </Text>
           </Box>
-          <Button key={`chev-${project.path}`} plain dimColor label={isOpen ? '▾' : '▸'} onPress={toggle} />
+          {isDesktop ? (
+            IconButton(elements, `chev-${project.path}`, toggle, <Text dimColor>{isOpen ? '▾' : '▸'}</Text>)
+          ) : (
+            <Button key={`chev-${project.path}`} plain dimColor label={isOpen ? '▾' : '▸'} onPress={toggle} />
+          )}
           {PinToggle(elements, e.surface, `pin-${project.path}`, !!pinned[project.path], () => togglePin(project.path))}
         </Box>
         {isOpen && (

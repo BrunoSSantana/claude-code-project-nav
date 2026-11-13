@@ -6,6 +6,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## [Unreleased]
 
+### Fixed
+
+- In the projects pane on Desktop, a project no longer shows a stray highlight strip over its name on hover. The chevron is what expands the project there, with its own small hover like the pin.
+
 ## [0.5.0] - 2026-11-11
 
 ### Added
